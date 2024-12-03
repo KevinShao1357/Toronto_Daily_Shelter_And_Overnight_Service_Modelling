@@ -61,10 +61,10 @@ The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) 
 
 The primary objective of this paper is to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, as mentioned in the introduction section. The number of beds of a shelter can reflect the necessary size of a shelter, so the general investment amounts of renovating existing shelters and building new shelters can be estimated, which can maximize efficiency of Canadian government's investments in shelters.
 
-@tbl-sample1 provides a sample (the first ten rows) of the cleaned dataset.
+@tbl-table1 provides a sample (the first ten rows) of the cleaned dataset.
 
 ```{r}
-#| label: tbl-sample1
+#| label: tbl-table1
 #| fig-cap: "Sample Data of Cleaned Data of Daily Shelter and Overnight Service"
 #| echo: false
 #| warning: false
@@ -110,16 +110,112 @@ As mentioned in the previous measurement section, our predictor varibles are mad
 
 ### Service Type
 
-'Service Type' is a categorical predictor variable, representing the type of the overnight service being provided 
+'Service Type' (dis a categorical predictor variable, representing the type of the overnight service being provided. Here, because we set the city to be Downtown Toronto, as well as age and gender to Mixed Adult, so only the following types exist:
 
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
+A 'Shelter' is a facility that give people experiencing homelessness a temporary living space so that they can move into new housing. Shelters operate the entire year for 7 days a week and 24 hours a day (@Dataset). 
 
+A 'Warming Centre' prevents people from experiencing extreme weather, giving people a shelter to stay in, and only opens with operation of 7 days a week and 24 hours a day during extreme weather alerts.
 
+A '24-Hour Respite' gives people experiencing homelessness a resting place, also providing them with "meals and service referrals." It operates 7 days a week and 24 hours a day.
 
+A 'Top Bunk Contingency Space' is not described in the dataset, but is also another type of shelter.
 
+The following @tbl-table3 describes the number of each service type in the cleaned data. Note that 'Respite' refers to 24-Hour Respite, and 'Cont_Space' refers to Top Bunk Contigency Space.
 
+```{r}
+#| label: tbl-table3
+#| tbl-cap: "Count for each service type"
+#| echo: false
+#| warning: false
+#| message: false
 
+knitr::kable(c(Shelter = sum(cleaned_data2$service_type == 'Shelter'), 
+               Warming_Centre = sum(cleaned_data2$service_type == 'Warming Centre'),
+               Respite = sum(cleaned_data2$service_type == '24-Hour Respite Site'),
+               Cont_Space = sum(cleaned_data2$service_type == 'Top Bunk Contingency Space')),
+             align = "c", col.names = ("Beds Occupieds in a Given Day"))
+```
+The above @tbl-table3 clearly represents that the four service types have very different frequencies. Shelters take the most frequency, of around 4000 observations, while 24-Hour Respites take up of around 2000 observations, about half of that of shelters, and other two have the least frequency, each of around 400 observations.
 
+### Classifcation
+
+The variable 'classification' corresponds to the original dataset's variable 'PROGRAM_MODEL', and are directed to either 'Emergency' or 'Transitional'. Basically, a location classified as 'Emergency' means that any people experiencing homelessness can come in without a referral, and vice versa. 
+
+@tbl-table4 below is a table representing the counts of each of the two classifications of all the observation in the cleaned dataset.
+
+```{r}
+#| label: tbl-table4
+#| tbl-cap: "Count for each classification"
+#| echo: false
+#| warning: false
+#| message: false
+
+knitr::kable(c(Emergency = sum(cleaned_data2$classification == 'Emergency'),
+               Transitional = sum(cleaned_data2$classification == 'Transitional')),
+             align = "c", col.names = ("Counts For Each Classification"))
+```
+From @tbl-table4, we can see that there are much more emergency locations (around 5400) than transitional locations (around 1400). There are around three times more emergency locations than transitional locations.
+
+### Program Area
+
+'Program Area' (denoted as 'program_area' in the cleaned dataset) "indicates whether the program is part of the base shelter and overnight services system, or is part of a temporary response program". For this cleaned dataset with the set limitations, it includes the following types.
+
+A 'Base Program - Refugee' is a program that serves refugees and other similar groups of people, and also operates the whole year.
+
+A 'Winter Program' is a program based on the additional spaces under winter service plans. This may also add additional spaces to existing programs. In the dataset description, it is denoted as 'Winter Response'.
+
+A 'Base Shelter and Overnight Services System' are regular programs that are set to operate the whole year.
+
+A 'Temporary Refugee Response' is similar to that of a 'Base Program - Refugee', but instead "create spaces in the overnight services systems" (@Dataset).
+
+@tbl-table5 below represents the counts of observations that have each program area. Note that 'Refugee' refers to 'Base Program - Refugee', 'Base_Shelter' refers to 'Base Shelter and Overnight Services System', and 'Temp_Refugee' refers to 'Temporary Refugee Response'
+
+```{r}
+#| label: tbl-table5
+#| tbl-cap: "Count for each program area"
+#| echo: false
+#| warning: false
+#| message: false
+
+knitr::kable(c(Refugee = sum(cleaned_data2$program_area == 'Base Program - Refugee'),
+               Base_Shelter = sum(cleaned_data2$program_area == 'Base Shelter and Overnight Services System'),
+               Temp_Refugee = sum(cleaned_data2$program_area == 'Temporary Refugee Response'),
+               Winter_Programs = sum(cleaned_data2$program_area == 'Winter Programs')),
+             align = "c", col.names = ("Counts For Each Classification"))
+```
+From @tbl-table5, we observe that locations with the program area 'Base Shelter and Overnight Services System' has most observations (around 4800). Locations with the program area 'Base Program - Refugee' has 1272 observations, around one-fourth of the previous one. The remaining two locations has much less observations.
+
+### Capacity
+
+The 'Capacity' (denoted 'capacity' in the cleaned dataset) is the maximum capacity of a location. The following @tbl-table6 gives the mean, standard deviation, maximum, and minimum of 'Capacity'.
+
+```{r}
+#| label: tbl-table6
+#| tbl-cap: "Summary Statistics of Variable Capacity"
+#| echo: false
+#| warning: false
+#| message: false
+
+knitr::kable(c(mean = mean(cleaned_data2$capacity), standard_deviation = sd(cleaned_data2$capacity), maximum = max(cleaned_data2$capacity), minimum = min(cleaned_data2$capacity)), align = "c", col.names = ("The Capacity of a Location"))
+```
+From @tbl-table6, the mean of capacity of locations is around 51 people, with an acceptable standard deviation of around 34 people. The maximum and minimum of capacity are 150 and 1 people respectively, and these statistics are all acceptable for constructing a multivariable linear regression model.
+
+### Occupancy Rate
+
+The occupancy rate here (denoted as 'occupancy_rate' in the cleaned dataset) is basically the occupied number of beds divided by the capacity in number of beds. The occupancy rate is measured in percentage, from 0 to 100 percent.
+
+The following @tbl-table7 represents the summary statistics of occupancy rate.
+
+```{r}
+#| label: tbl-table7
+#| tbl-cap: "Summary Statistics of Occupancy Rate"
+#| echo: false
+#| warning: false
+#| message: false
+
+knitr::kable(c(mean = mean(cleaned_data2$occupancy_rate), standard_deviation = sd(cleaned_data2$occupancy_rate), maximum = max(cleaned_data2$occupancy_rate), minimum = min(cleaned_data2$occupancy_rate)), align = "c", col.names = ("Occupancy Rate in a Given Day"))
+```
+From @tbl-table7, we can conclude that occupancy rate of locations are all pretty much near 100, with a relatively low standard deviation of 5 percentage points, so most locations are relatively full, but we can still consider it as a predictor variable, but needs careful consideration when interpreting results.
 
 # Model
 
