@@ -5,7 +5,7 @@
 # Date: 3 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The `tidyverse` package must be installed. 
+# Pre-requisites: The `tidyverse` package must be installed.
 # Any other information needed? None
 
 

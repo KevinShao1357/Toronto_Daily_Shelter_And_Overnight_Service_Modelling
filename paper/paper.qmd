@@ -3,7 +3,7 @@ title: "My title"
 subtitle: "My subtitle if needed"
 author: 
   - Kevn Shao
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+thanks: "Code and data are available at: https://github.com/KevinShao1357/Toronto_Daily_Shelter_And_Overnight_Service_Modelling.git."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -89,7 +89,7 @@ In the original dataset, each observation of shelters vary by date. However, bec
 
 Then, we determine our predictor variables, made up of three categorical variables, which are classification, program area, and service type, and two numerical variables, which are capacity and occupancy rate. The rationale here is basically just ignoring the columns which only provide basic information, and then save all the remaining categorical variables (leaving the different types of shelters variables that are prepared to be involved in the multivariate linear regression model, after fixing the city, as well as general age and gender of the shelters) and numerical variables that are logical to predict the number of beds. Finally, we rename the variables to make them easier to understand, and we get our final cleaned dataset.
 
-## Outcome variables
+## Outcome variables (And Estimand)
 
 The outcome variable, or response variable, for this multivariate linear regression model, corresponds to the variable 'count' in the cleaned data set, which in context of the dataset, is the number of occupied beds during this day. By averaging this variable's statistics over about a year, we may get a representative value of the number of beds necessary for a shelter with the given statistics of the predictor variables. Note that the variable 'count' should be less or equal to the current capacity of the corresponding shelter. Its summary statistics are presented in the following @tbl-table2.
 
@@ -103,6 +103,8 @@ The outcome variable, or response variable, for this multivariate linear regress
 knitr::kable(c(mean = mean(cleaned_data2$count), standard_deviation = sd(cleaned_data2$count), maximum = max(cleaned_data2$count), minimum = min(cleaned_data2$count)), align = "c", col.names = ("Beds Occupieds in a Given Day"))
 ```
 From the above summary statistics presented in @tbl-table2, the mean of 'count' is around 50 to 51 beds occupied in a given day of a shelter, the standard deviation is around 34, and the maximum and minimum are 150 and 1 respectively. Here, we can see that 'count' has some outliers, and also has reasonable mean and standard deviation, and so 'count' is suitable for being the response variable of our multivariable linear regression model.
+
+Since we are trying to constructing a multivariate linear regression model, our estimand is the response variable, which is the the number of occupied beds during a day (can be understood as the demand of beds) in a location that provides daily shelter or overnight service.
 
 ## Predictor variables
 
@@ -219,9 +221,7 @@ From @tbl-table7, we can conclude that occupancy rate of locations are all prett
 
 # Model
 
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+Now we start to create the multivariate linear regression model, with the set predictor and response variables.
 
 ## Model set-up
 

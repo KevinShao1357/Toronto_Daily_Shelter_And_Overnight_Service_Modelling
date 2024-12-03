@@ -5,7 +5,7 @@
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Have the chosen raw dataset downloaded. All previous scripts 
-# must be run.
+# must be runn.
 # Any other information needed? No
 
 #### Workspace setup ####

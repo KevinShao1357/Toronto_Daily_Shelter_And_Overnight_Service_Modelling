@@ -4,7 +4,7 @@
 # Date: 3 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: All previous scripts must be run.
+# Pre-requisites: All previous scripts must be runn.
 # Any other information needed? None
 
 #### Workspace setup ####
