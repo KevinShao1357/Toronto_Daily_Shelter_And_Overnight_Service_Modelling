@@ -10,7 +10,6 @@
 # Any other information needed? No
 
 #### Workspace setup ####
-
 # Download the relevant packages needed for downloading required data if
 # necessary. If packages are already downloaded, comment out the following lines.
 install.packages("opendatatoronto")
