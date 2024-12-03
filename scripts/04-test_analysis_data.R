@@ -16,14 +16,16 @@ library(tidyverse)
 cleaned_data <- read_csv("data/02-analysis_data/analysis_data.csv")
 
 #### Test data ####
-# Test that the dataset has 8 columns in total
-ncol(cleaned_data) == 8
+# Test that the dataset has 6 columns in total
+ncol(cleaned_data) == 6
 
 # Test if there are any NA values in the dataset
 sum(is.na(cleaned_data)) == 0
 
 # Test if the value in count is always less or equal to the value in capacity
 all(cleaned_data$count <= cleaned_data$capacity)
+
+# Check the maximum capacity for simulation purposes
 max(cleaned_data$capacity)
 
 # Test if all elements in the row 'service_type' are valid. First check

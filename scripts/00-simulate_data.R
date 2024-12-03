@@ -35,8 +35,8 @@ Col_OccupancyRate <- runif(2000, min = 0, max = 100)
 # Simulate the count and capacity respectively. We already checked the maximum
 # of the capacity as 150 for all satisfied shelters, and for each observation,
 # the count should be less or equal to the capacity.
-Col_Count <- sample(-1:151, size = 2000, replace = TRUE)
-Col_Capacity <- sample(-1:151, size = 2000, replace = TRUE)
+Col_Count <- sample(0:150, size = 2000, replace = TRUE)
+Col_Capacity <- sample(0:150, size = 2000, replace = TRUE)
 
 # Simulate the final program_area and service_type columns.
 Col_ProgramArea <- sample(c("Base Program - Refugee", "Winter Programs",

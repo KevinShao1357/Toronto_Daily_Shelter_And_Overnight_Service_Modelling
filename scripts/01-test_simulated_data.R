@@ -15,15 +15,14 @@ library(tidyverse)
 simulated_data <- read_csv("data/00-simulated_data/simulated_data.csv")
 
 #### Test data ####
-# Test that the dataset has 8 columns in total
-ncol(simulated_data) == 8
+# Test that the dataset has 6 columns in total
+ncol(simulated_data) == 6
 
 # Test if there are any NA values in the dataset
 sum(is.na(simulated_data)) == 0
 
 # Test if the value in count is always less or equal to the value in capacity
 all(simulated_data$count <= simulated_data$capacity)
-max(simulated_data$capacity)
 
 # Check if all elements in the row 'service_type' are included in the ideal set
 # of types.
