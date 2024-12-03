@@ -2,11 +2,11 @@
 # Purpose: Downloads and saves the data from the corresponding Open Data Toronto
 # directory
 # Author: Kevin Shao
-# Date: 3 November 2024
+# Date: 3 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Find the corresponding Open Data Toronto dataset through
-# their official website
+# their official website. All previous scripts must be run.
 # Any other information needed? No
 
 #### Workspace setup ####
@@ -39,4 +39,4 @@ data <- get_resource(package_id)
 
 #### Save data ####
 # Save the data into the desired file of the corresponding directory
-write_csv(data, "data/raw_data.csv")
+write_csv(data, "data/01-raw_data/raw_data.csv")

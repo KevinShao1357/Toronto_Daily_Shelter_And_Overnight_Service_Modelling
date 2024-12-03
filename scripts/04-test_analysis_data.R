@@ -1,69 +1,57 @@
 #### Preamble ####
-# Purpose: Tests... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 26 September 2024 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Tests the cleaned data
+# Author: Kevin Shao
+# Date: 3 December 2024
+# Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
+# Pre-requisites: Have a cleaned data that is processed and saved properly. All
+# previous scripts must be run.
+# Any other information needed? No
 
 #### Workspace setup ####
+# Read the packages needed to download required data
 library(tidyverse)
-library(testthat)
 
-data <- read_csv("data/02-analysis_data/analysis_data.csv")
-
+# Read the dataset and save it into cleaned_data
+cleaned_data <- read_csv("data/02-analysis_data/analysis_data.csv")
 
 #### Test data ####
-# Test that the dataset has 151 rows - there are 151 divisions in Australia
-test_that("dataset has 151 rows", {
-  expect_equal(nrow(analysis_data), 151)
-})
+# Test that the dataset has 8 columns in total
+ncol(cleaned_data) == 8
 
-# Test that the dataset has 3 columns
-test_that("dataset has 3 columns", {
-  expect_equal(ncol(analysis_data), 3)
-})
+# Test if there are any NA values in the dataset
+sum(is.na(cleaned_data)) == 0
 
-# Test that the 'division' column is character type
-test_that("'division' is character", {
-  expect_type(analysis_data$division, "character")
-})
+# Test if the value in count is always less or equal to the value in capacity
+all(cleaned_data$count <= cleaned_data$capacity)
+max(cleaned_data$capacity)
 
-# Test that the 'party' column is character type
-test_that("'party' is character", {
-  expect_type(analysis_data$party, "character")
-})
+# Test if all elements in the row 'service_type' are valid. First check
+# all the unique values in this row, and then check using a test again
+unique_values <- unique(cleaned_data$service_type)
+print(unique_values)
 
-# Test that the 'state' column is character type
-test_that("'state' is character", {
-  expect_type(analysis_data$state, "character")
-})
+all(cleaned_data$service_type %in% c("Shelter", "Warming Centre",
+                                     "24-Hour Respite Site", "Top Bunk Contingency Space"))
 
-# Test that there are no missing values in the dataset
-test_that("no missing values in dataset", {
-  expect_true(all(!is.na(analysis_data)))
-})
+# Test if all elements in the row 'program_area' are valid. Use same procedure
+# as the one above. This procedure is used because some values are not as
+# presented in the Open Data Toronto because I limited the observations only to
+# Downtown Toronto.
+unique_values2 <- unique(cleaned_data$program_area)
+print(unique_values2)
 
-# Test that 'division' contains unique values (no duplicates)
-test_that("'division' column contains unique values", {
-  expect_equal(length(unique(analysis_data$division)), 151)
-})
+all(cleaned_data$program_area %in% c("Base Program - Refugee", "Winter Programs",
+                                     "Base Shelter and Overnight Services System", 
+                                     "Temporary Refugee Response"))
 
-# Test that 'state' contains only valid Australian state or territory names
-valid_states <- c("New South Wales", "Victoria", "Queensland", "South Australia", "Western Australia", 
-                  "Tasmania", "Northern Territory", "Australian Capital Territory")
-test_that("'state' contains valid Australian state names", {
-  expect_true(all(analysis_data$state %in% valid_states))
-})
+# Test if all elements in the row 'classification' are valid
+all(cleaned_data$classification %in% c("Emergency", "Transitional"))
 
-# Test that there are no empty strings in 'division', 'party', or 'state' columns
-test_that("no empty strings in 'division', 'party', or 'state' columns", {
-  expect_false(any(analysis_data$division == "" | analysis_data$party == "" | analysis_data$state == ""))
-})
+# Test if all elements in the row 'occupancy_rate' are valid
+all(cleaned_data$occupancy_rate >= 0)
+all(cleaned_data$occupancy_rate <= 100)
 
-# Test that the 'party' column contains at least 2 unique values
-test_that("'party' column contains at least 2 unique values", {
-  expect_true(length(unique(analysis_data$party)) >= 2)
-})
+# Test if all other columns are valid
+all(cleaned_data$capacity >= 0)
+all(cleaned_data$count >= 0)
