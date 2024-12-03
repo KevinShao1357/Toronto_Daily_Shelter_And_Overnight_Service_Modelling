@@ -1,26 +1,43 @@
 #### Preamble ####
-# Purpose: Downloads and saves the data from [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Downloads and saves the data from the corresponding Open Data Toronto
+# directory
+# Author: Kevin Shao
+# Date: 3 November 2024
+# Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
+# Pre-requisites: Find the corresponding Open Data Toronto dataset through
+# their official website
+# Any other information needed? No
 
 #### Workspace setup ####
+
+# Download the relevant packages needed for downloading required data if
+# necessary. If packages are already downloaded, comment out the following lines.
+install.packages("opendatatoronto")
+
+# Read the packages needed to download required data
 library(opendatatoronto)
 library(tidyverse)
-# [...UPDATE THIS...]
+library(dplyr)
+library(readr)
 
 #### Download data ####
-# [...ADD CODE HERE TO DOWNLOAD...]
+# Fetch the raw metadata package of the corresponding resource
+package_mdata <- list_package_resources("21c83b32-d5a8-4106-a54f-010dbe49f6f2")
 
+# Filter out any NA values of all its columns
+cleaned_mdata <- package_mdata %>%
+  filter(!is.na(format) & !is.na(name) & !is.na(id) & !is.na(last_modified))
 
+# Get the specific package wanted
+chosen_package <- cleaned_mdata[3,]
+
+# Extract the chosen package id
+package_id <- chosen_package$id
+
+# Save the data of the corresponding package id
+data <- get_resource(package_id)
 
 #### Save data ####
-# [...UPDATE THIS...]
-# change the_raw_data to whatever name you assigned when you downloaded it.
-write_csv(the_raw_data, "inputs/data/raw_data.csv") 
-
-         
+# Save the data into the desired file of the corresponding directory
+write_csv(data, "data/raw_data.csv")
