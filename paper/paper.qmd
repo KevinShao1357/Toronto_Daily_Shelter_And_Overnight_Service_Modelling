@@ -9,6 +9,7 @@ date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
+toc: true
 number-sections: true
 bibliography: references.bib
 ---
@@ -18,27 +19,31 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
+# Download the relevant packages needed for downloading required data if
+# necessary. If packages are already downloaded, comment out the following lines.
+install.packages("palmerpenguins")
+install.packages("here")
+install.packages("modelsummary")
+install.packages("rstanarm")
+
+# Load the necessary packages
 library(tidyverse)
 library(palmerpenguins)
+library(here)
+library(modelsummary)
+library(rstanarm)
 ```
 
 
 # Introduction
 
-Overview paragraph
+Canada provides shelters for people in need, such as refugees, the homeless, and people experiencing transitions in living spaces, and the country is continuing to build new shelters for such residents. On April 16, 2024, the Canadian government announced a funding of over 250 million dollars over two years to address homelessness and encampment all over the country. In 2022, Canada announced a target to eliminate homelessness by 2030. Canada Mortgage and Housing Corporation also allocated a total of 420 million dollars to account for homelessness (@ShelterInvestment). This implicates that the Canadian government will continuously invest in improving current shelters and building new shelters around the country. In 2024, Canada's Minister of Immigration, Refugees, and Citizenship Marc Miller also announced that the country would accept 27,000 new refguees this year, and this trend is likely to continue in the next years (@CanadaRefugee). We can conclude that more shelters are likely to be built in Canada in the future, and the same trend is also valid for the GTA(Greater Toronto Area). 
 
-Estimand paragraph
+To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multiple linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the area around the largest city in Canada, and is a popular destination in Canada for refugees and homeless. Specifically, the aim of this paper is to just to just test the validity/effect of using such a statistical model to predict the number of beds, so we will set our sample for modelling to only cover Down Toronto. Downtown Toronto is relatively representative of the GTA because it is the financial center of the largest city in Canada, likely to become a popular destination for such refugees and homeless, so many new shelters may be built in this Canada's financial center. 
 
-Results paragraph
+Specifically, this paper uses the dataset about occupancy and capacity of daily shelter and overnight service provided by Open Data Toronto, which contains all relevant information of cities in the GTA(Greater Toronto Area). Our estimand, or response variable, is the number of beds needed for a shelter,
 
-Why it matters paragraph
-
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
-
-
-
-
+The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-results covers the multiple linear regression model used in this paper; @sec-results provides results obtain from the derived model; and @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved.
 
 # Data {#sec-data}
 
