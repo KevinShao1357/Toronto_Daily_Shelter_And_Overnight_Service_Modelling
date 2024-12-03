@@ -2,8 +2,7 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: 
-  - First author
-  - Another author
+  - Kevn Shao
 thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
 date: today
 date-format: long
@@ -18,30 +17,39 @@ bibliography: references.bib
 #| include: false
 #| warning: false
 #| message: false
+#| echo: false
 
 # Download the relevant packages needed for downloading required data if
 # necessary. If packages are already downloaded, comment out the following lines.
-install.packages("palmerpenguins")
-install.packages("here")
-install.packages("modelsummary")
-install.packages("rstanarm")
+install.packages("opendatatoronto")
+install.packages("janitor")
+install.packages("dplyr")
+install.packages("readr")
+install.packages("gt")
+install.packages("AER")
+install.packages("kableExtra")
 
 # Load the necessary packages
 library(tidyverse)
-library(palmerpenguins)
-library(here)
-library(modelsummary)
-library(rstanarm)
+library(opendatatoronto)
+library(janitor)
+library(dplyr)
+library(readr)
+library(gt)
+library(AER)
+library(knitr)
+library(kableExtra)
+
+# Read and save the cleaned dataset
+cleaned_data2 <- read.csv(here::here("data/02-analysis_data/analysis_data.csv"))
 ```
 
 
 # Introduction
 
-Canada provides shelters for people in need, such as refugees, the homeless, and people experiencing transitions in living spaces, and the country is continuing to build new shelters for such residents. On April 16, 2024, the Canadian government announced a funding of over 250 million dollars over two years to address homelessness and encampment all over the country. In 2022, Canada announced a target to eliminate homelessness by 2030. Canada Mortgage and Housing Corporation also allocated a total of 420 million dollars to account for homelessness (@ShelterInvestment). This implicates that the Canadian government will continuously invest in improving current shelters and building new shelters around the country. In 2024, Canada's Minister of Immigration, Refugees, and Citizenship Marc Miller also announced that the country would accept 27,000 new refguees this year, and this trend is likely to continue in the next years (@CanadaRefugee). We can conclude that more shelters are likely to be built in Canada in the future, and the same trend is also valid for the GTA(Greater Toronto Area). 
+Canada provides shelters for people in need, such as refugees, the homeless, and people experiencing transitions in living spaces, and the country is continuing to build new shelters for such residents. On April 16, 2024, the Canadian government announced a funding of over 250 million dollars over two years to address homelessness and encampment all over the country. In 2022, Canada announced a target to eliminate homelessness by 2030. Canada Mortgage and Housing Corporation also allocated a total of 420 million dollars to account for homelessness (@Shelter). This implicates that the Canadian government will continuously invest in improving current shelters and building new shelters around the country. In 2024, Canada's Minister of Immigration, Refugees, and Citizenship Marc Miller also announced that the country would accept 27,000 new refguees this year, and this trend is likely to continue in the next years (@Refugee). We can conclude that more shelters are likely to be built in Canada in the future, and the same trend is also valid for the GTA(Greater Toronto Area). 
 
-To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multiple linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the area around the largest city in Canada, and is a popular destination in Canada for refugees and homeless. Specifically, the aim of this paper is to just to just test the validity/effect of using such a statistical model to predict the number of beds, so we will set our sample for modelling to only cover Down Toronto. Downtown Toronto is relatively representative of the GTA because it is the financial center of the largest city in Canada, likely to become a popular destination for such refugees and homeless, so many new shelters may be built in this Canada's financial center. 
-
-Specifically, this paper uses the dataset about occupancy and capacity of daily shelter and overnight service provided by Open Data Toronto, which contains all relevant information of cities in the GTA(Greater Toronto Area). Our estimand, or response variable, is the number of beds needed for a shelter,
+To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multivariate linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the largest city in Canada, and is also the scope of our chosen dataset. We also set the city of where the shelter is located to Downtown Toronto, and also set the classification of shelters based on gender and age to mixed adult, which are all the ones of their category with the highest frequency. As mentioned in the previous paragraph, we also chose our response variable to be number of beds, a choice between shelters grouped by rooms or shelters grouped by beds. The reasoning behind these choices are explained in the 'Measurement' of the data section (Section @sec-data).
 
 The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-results covers the multiple linear regression model used in this paper; @sec-results provides results obtain from the derived model; and @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved.
 
@@ -49,62 +57,60 @@ The remainder of this paper is structured as follows: @sec-data details the data
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R).
 
-Overview text
+The primary objective of this paper is to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, as mentioned in the introduction section. The number of beds of a shelter can reflect the necessary size of a shelter, so the general investment amounts of renovating existing shelters and building new shelters can be estimated, which can maximize efficiency of Canadian government's investments in shelters.
 
-## Measurement
-	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
-
-## Outcome variables
-
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
-
-
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+@tbl-sample1 provides a sample (the first ten rows) of the cleaned dataset.
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: tbl-sample1
+#| fig-cap: "Sample Data of Cleaned Data of Daily Shelter and Overnight Service"
 #| echo: false
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
+kable(cleaned_data2[1:10,]) %>%
+  kable_styling(font_size = 10, position = "center", full_width = FALSE)
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
-Talk way more about it. 
+## Measurement
+	
+Since the aim of this paper is only to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, we want to simplify the dataset as much simple as possible. 
+
+We first consider the classification of shelters based on gender and age, which is divided into adult men, adult women, mixed adult, youth and family. We find that mixed adult shelters takes the majority with the most observations, so we conclude that mixed adult shelters are most representative for checking the validity of the multivariate linear regression model for predicting number of beds for a shelter, so we filter out so that only mixed adult shelters are in the cleaned dataset.
+
+Downtown Toronto has the most shelters in all the cities (of GTA(Greater Toronto Area)) in this dataset, so we also conclude that Downtown Toronto is the most representative of all the provided cities, so we then filter out the cleaned data so it only contains shelters in Downtown Toronto.
+
+In this dataset, the shelters are either grouped by rooms or by beds. Since our aim is to analyze the validity of maximizing efficiency of investments of shelters using a multivariate linear regression model, considering number of beds will bring more accurate results. This is because each room can vary in size, so it is not a precise measure of the demand of shelters, which is ultimately based on the number of people, while it is more accurate to assume that one bed can accommodate one person. Therefore, we then filter out the cleaned data so it only contains shelters in Downtown Toronto.
+
+In the original dataset, each observation of shelters vary by date. However, because we are discussing about investments in shelters, which is a long-term process, and our response variable is the number of beds necessary in a shelter, we want to get an average of the number of beds to maximize the efficiency of shelter investments by the Canadian government. Therefore, we ignore the date column, and just aim to construct a multivariate linear regression model considering all days from January 1 to December 1, which is the version of the dataset we chose to use, which is updated until December 2, 2024.
+
+Then, we determine our predictor variables, made up of three categorical variables, which are classification, program area, and service type, and two numerical variables, which are capacity and occupancy rate. The rationale here is basically just ignoring the columns which only provide basic information, and then save all the remaining categorical variables (leaving the different types of shelters variables that are prepared to be involved in the multivariate linear regression model, after fixing the city, as well as general age and gender of the shelters) and numerical variables that are logical to predict the number of beds. Finally, we rename the variables to make them easier to understand, and we get our final cleaned dataset.
+
+## Outcome variables
+
+The outcome variable, or response variable, for this multivariate linear regression model, corresponds to the variable 'count' in the cleaned data set, which in context of the dataset, is the number of occupied beds during this day. By averaging this variable's statistics over about a year, we may get a representative value of the number of beds necessary for a shelter with the given statistics of the predictor variables. Note that the variable 'count' should be less or equal to the current capacity of the corresponding shelter. Its summary statistics are presented in the following @tbl-table2.
+
+```{r}
+#| label: tbl-table2
+#| tbl-cap: "Summary Statistics of Number of Beds Occupied During a Given Day"
+#| echo: false
+#| warning: false
+#| message: false
+
+knitr::kable(c(mean = mean(cleaned_data2$count), standard_deviation = sd(cleaned_data2$count), maximum = max(cleaned_data2$count), minimum = min(cleaned_data2$count)), align = "c", col.names = ("Beds Occupieds in a Given Day"))
+```
+From the above summary statistics presented in @tbl-table2, the mean of 'count' is around 50 to 51 beds occupied in a given day of a shelter, the standard deviation is around 34, and the maximum and minimum are 150 and 1 respectively. Here, we can see that 'count' has some outliers, and also has reasonable mean and standard deviation, and so 'count' is suitable for being the response variable of our multivariable linear regression model.
 
 ## Predictor variables
 
-Add graphs, tables and text.
+As mentioned in the previous measurement section, our predictor varibles are made up of three categorical variables and two numerical variables, and are already chosen, because they are the only ones that are appropriate and logical to predict the number of occupied beds at a given day for a shelter. The following is a more specific description for each of the predictor variables.
+
+### Service Type
+
+'Service Type' is a categorical predictor variable, representing the type of the overnight service being provided 
 
 Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
 

@@ -13,7 +13,7 @@
 library(tidyverse)
 
 # Read the dataset and save it into cleaned_data
-cleaned_data <- read_csv("data/02-analysis_data/analysis_data.csv")
+cleaned_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 #### Test data ####
 # Test that the dataset has 6 columns in total

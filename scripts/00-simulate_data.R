@@ -13,9 +13,11 @@
 # Download the relevant packages needed for downloading required data if
 # necessary. If packages are already downloaded, comment out the following lines.
 install.packages("tidyverse")
+install.packages("arrow")
 
 # Load the necessary packages and ensure reproducibility
 library(tidyverse)
+library(arrow)
 set.seed(853)
 
 #### Simulate data ####
@@ -59,4 +61,4 @@ simulated_data <- data.frame(service_type = Col_ServiceType,
 simulated_data <- simulated_data[simulated_data$count <= simulated_data$capacity, ]
 
 #### Save data ####
-write_csv(simulated_data, "data/00-simulated_data/simulated_data.csv")
+write_parquet(simulated_data, "data/00-simulated_data/simulated_data.parquet")

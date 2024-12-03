@@ -10,9 +10,10 @@
 #### Workspace setup ####
 # Read the packages needed to download required data
 library(tidyverse)
+library(arrow)
 
 # Read the dataset and save it into cleaned_data
-simulated_data <- read_csv("data/00-simulated_data/simulated_data.csv")
+simulated_data <- read_parquet("data/00-simulated_data/simulated_data.parquet")
 
 #### Test data ####
 # Test that the dataset has 6 columns in total

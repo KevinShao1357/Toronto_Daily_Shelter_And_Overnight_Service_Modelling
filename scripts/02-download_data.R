@@ -13,12 +13,15 @@
 # Download the relevant packages needed for downloading required data if
 # necessary. If packages are already downloaded, comment out the following lines.
 install.packages("opendatatoronto")
+install.packages("readr")
+install.packages("dplyr")
 
 # Read the packages needed to download required data
 library(opendatatoronto)
 library(tidyverse)
 library(dplyr)
 library(readr)
+library(arrow)
 
 #### Download data ####
 # Fetch the raw metadata package of the corresponding resource
@@ -39,4 +42,4 @@ data <- get_resource(package_id)
 
 #### Save data ####
 # Save the data into the desired file of the corresponding directory
-write_csv(data, "data/01-raw_data/raw_data.csv")
+write_parquet(data, "data/01-raw_data/raw_data.parquet")

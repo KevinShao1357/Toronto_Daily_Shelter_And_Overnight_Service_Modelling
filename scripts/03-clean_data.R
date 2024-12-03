@@ -16,10 +16,11 @@ install.packages("janitor")
 # Read the packages needed to download required data
 library(tidyverse)
 library(janitor)
+library(arrow)
 
 #### Clean data ####
 # Read the raw data file and save it to raw_data
-raw_data <- read_csv(file = "data/01-raw_data/raw_data.csv", show_col_types = FALSE)
+raw_data <- read_parquet(file = "data/01-raw_data/raw_data.parquet", show_col_types = FALSE)
 
 # Clean names in the dataset
 cleaned_data <- clean_names(raw_data)
@@ -106,4 +107,4 @@ cleaned_data <-
   )
 
 #### Save data ####
-write_csv(cleaned_data, "data/02-analysis_data/analysis_data.csv")
+write_parquet(cleaned_data, "data/02-analysis_data/analysis_data.parquet")
