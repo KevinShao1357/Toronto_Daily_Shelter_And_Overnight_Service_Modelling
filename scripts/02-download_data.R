@@ -21,7 +21,6 @@ library(opendatatoronto)
 library(tidyverse)
 library(dplyr)
 library(readr)
-library(arrow)
 
 #### Download data ####
 # Fetch the raw metadata package of the corresponding resource
@@ -42,4 +41,4 @@ data <- get_resource(package_id)
 
 #### Save data ####
 # Save the data into the desired file of the corresponding directory
-write_parquet(data, "data/01-raw_data/raw_data.parquet")
+write_csv(data, "data/01-raw_data/raw_data.csv")

@@ -11,6 +11,8 @@
 #### Workspace setup ####
 # Read the packages needed to download required data
 library(tidyverse)
+library(arrow)
+library(testthat)
 
 # Read the dataset and save it into cleaned_data
 cleaned_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")

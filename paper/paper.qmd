@@ -1,12 +1,11 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Predictions of Occupied Beds at Faculties Providing Daily Shelter And/Or Overnight Services Using Multivariate Linear Regression Leads To Possible Maximized Efficient of Government Investment To These Faculties"
 author: 
   - Kevn Shao
 thanks: "Code and data are available at: https://github.com/KevinShao1357/Toronto_Daily_Shelter_And_Overnight_Service_Modelling.git."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "Recently, the Canadian government expresses interest in continuous investment in government faculties providing daily shelter and/or overnight services. With the aim to evaluate the validity of predicting the occupied beds at a related faculties at a day, which can reflect the demand of such services at such locations, a multivariate linear regression model is constructed, with the city to Downtown Toronto, and the gender and age set to Mixed Adults. Five predictor variables are used, including two numerical variables, occupancy rate and capacity, and three categorical variables, including classification, service types, and program types. The final results showed a possible violation of linearity assumptions such as homoscedasticity and normality of errors, but also reflects the possibility of predicting the appropriate amount of investment to these facilities using this statistical approach."
 format: pdf
 toc: true
 number-sections: true
@@ -25,11 +24,10 @@ library(opendatatoronto)
 library(janitor)
 library(dplyr)
 library(readr)
-library(gt)
-library(AER)
 library(knitr)
 library(kableExtra)
 library(arrow)
+library(ggplot2)
 
 # Read and save the cleaned dataset
 cleaned_data2 <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
@@ -44,13 +42,15 @@ To find a way to maximize efficiency of the investment on shelters, I want to ev
 
 After finishing the derivation of the final multivariate linear regression model, we can find that the model satisfies most linearity assumptions, but its residual versus fitted plot shows that the homoscedasticity (constant variance) assumption is violated. Also, from the qq plot, we can also see that the normality of errors assumption may be violated too, although this is unsure due to the relatively ideal p-value, r-squared, and residual standard error. Overall, we can see that there is the possibility that modelling the predictor variables, such as occupied beds, occupancy rate, types of shelters, and types of operations, to predict the number of beds needed per day at a location providing daily shelter and/or overnight service, which can reflect the most-likely number of beds needed for a location providing such services, which can determine the size and number of shelters which renovation is needed, and whether new shelters should be built at locations, which may precisely control the amount of investment by Canadian government needed on facilities providing daily shelter and/or overnight service. However, there are still some limitations and further discussions to this result, which is discussed in detail in @sec-discussion.
 
-The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-model covers the multivariate linear regression model used in this paper; @sec-results provides results obtain from the derived model; and @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved.
+The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-model covers the multivariate linear regression model used in this paper; @sec-results provides results obtain from the derived model; @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved; @sec-appendix is about analysis of observational data and surveys, and is the appendix of this paper.
 
 # Data {#sec-data}
 
 ## Overview
 
-The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R).
+The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R). The book 'Telling Stories with Data' (@tellingstories) was also used to complete this paper.
+
+Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), and testthat (@testthat).
 
 The primary objective of this paper is to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, as mentioned in the introduction section. The number of beds of a shelter can reflect the necessary size of a shelter, so the general investment amounts of renovating existing shelters and building new shelters can be estimated, which can maximize efficiency of Canadian government's investments in shelters.
 
@@ -364,8 +364,30 @@ Now, as shown in the qq plot displayed in @fig-figure3, there are many elements 
 
 # Results {#sec-results}
 
-Our results are summarized in
+Our results are summarized in @tbl-table9. Note that the response variable is not logged.
 
+```{r}
+#| label: tbl-table9
+#| tbl-cap: "Coefficients of the Final Model"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Extract coefficients and the intercept
+coef <- coef(model_b)
+
+# Create a data frame for the coefficients and intercept
+coef_tbl <- data.frame(
+  Coef = coef   
+)
+
+# Display the table using kable
+kable(
+  coef_tbl,
+  col.names = c("Coefficient"),
+  caption = "Coefficients and Intercept of the Multivariate Linear Regression Model"
+)
+```
 
 # Discussion {#sec-discussion}
 
@@ -401,10 +423,15 @@ Using the current multivariate linear regression model, one can get an estimate 
 
 \appendix
 
-# Appendix {-}
+# Appendix A: Analysis of Observational Data and Surveys {#sec-appendix}
 
+Here is just some analysis of my constructed multivariate linear regression model, as well as some of my understandings of this provided dataset.
 
+As I have been analyzing the cleaned data all the time, I am only being in touch with a subset of the Open Data Toronto that is about daily shelter and overnight service occupancy and capacity that I have chosen. Therefore, I may have stepped into the Simpson's Paradox, which occurs "when we estimate some relationship for subsets of our data, but a different relationship when we consider the entire dataset" (@tellingstories). The Simpson Paradox is an instance of the ecological fallacy, which basically occurs when we try to conclude some characteristics of an individual based on their group. This paradox is also certain to be possible to happen on my analysis, since I only chose the city Downtown Toronto, whereas the original dataset is about information of same facilities, but for the entire Greater Toronto Area (GTA). For example, if for the current data about the city Downtown Toronto, the residual plots show a clear conical shape, showing a violation of the linearity assumption homoscedasticity (constant variance), then I would naturally try to log the response variable to adhere more to this assumption. After this approach, I follow the other typical procedures to construct a final multivariate linear regression model. Then, at this moment, if I then generalize the model for all cities in Greater Toronto Area (GTA), an issue may occur if for certain other cities, no conical shape appears in other residual plots, then there may exist a possibility that for these cities, when I log the response variable, the homoscedasticity assumption is then unexpectingly violated. If the frequency of these cities are too high, the model I constructed for the city Downtown Toronto may not be valid as a whole.
 
+A similar paradox Berkson's paradox may also occur similarly. Berkson's paradox occurs when "we estimate some relationship based on the dataset that we have, but because the dataset is so selected, the relationship is different in a more general dataset" (@tellingstories). Take the cleaned version of my chosen dataset again, the current multivariate linear regression model is only relatively valid, and is not valid to the highest extent, due to the possible violation of the linearity assumptions of homoscedasticity and/or normality of errors. However, this may be not be the case for the entire dataset which has the scope of the entire Greater Toronto Area (GTA), so the model between the same predictor and response variables may be more valid, less valid, entirely valid, or not valid at all, depending on the key characteristics of variables of other subsets based on the scope of other cities in GTA.
+
+Let's also analyze some information about the data collection process of the same Open Data Toronto dataset named 'Daily Shelter & Overnight Service Occupancy & Capacity'. According to the official website page of the dataset on Open Data Toronto, the updated information about shelter and overnight service programs, including the program's operator, location, classification, occupancy, and capacity, which are all "administered by TSSS(Toronto Shelter and Support Services" (@Dataset). However, we cannot make sure that the administration of TSSS is certainly free of mistakes, so some parts of the dataset may also be done with convenience sampling, which is a type of non-probability sampling when researchers collect data which are easiest to accest from their perspective. If this hypothesis holds true, then even if the entire dataset used, the model can be still not representative of all the related facilities in the Greater Toronto Area (GTA).
 \newpage
 
 

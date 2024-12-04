@@ -62,3 +62,4 @@ simulated_data <- simulated_data[simulated_data$count <= simulated_data$capacity
 
 #### Save data ####
 write_parquet(simulated_data, "data/00-simulated_data/simulated_data.parquet")
+

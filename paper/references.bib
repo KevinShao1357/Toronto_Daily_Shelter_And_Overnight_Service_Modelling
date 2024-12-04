@@ -25,7 +25,8 @@
   }
 
 @ChosenDataset{Dataset,
-  author = {Open Data Toronto},
+  author = {Toronto Shelter & Support Services},
+  organization = {Open Data Toronto},
   title = {Daily Shelter & Overnight Service Occupancy & Capacity},
   year = {2 December 2024},
   url = {https://open.toronto.ca/dataset/daily-shelter-overnight-service-occupancy-capacity/},
@@ -41,9 +42,16 @@ https://github.com/sharlagelfand/opendatatoronto/},
     url = {https://sharlagelfand.github.io/opendatatoronto/},
   }
   
-
+@Book{ggplot2,
+    author = {Hadley Wickham},
+    title = {ggplot2: Elegant Graphics for Data Analysis},
+    publisher = {Springer-Verlag New York},
+    year = {2016},
+    isbn = {978-3-319-24277-4},
+    url = {https://ggplot2.tidyverse.org},
+  }
   
-@Article{thereferencecanbewhatever,
+@Article{tidyverse,
     title = {Welcome to the {tidyverse}},
     author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
     year = {2019},
@@ -52,61 +60,89 @@ https://github.com/sharlagelfand/opendatatoronto/},
     number = {43},
     pages = {1686},
     doi = {10.21105/joss.01686},
-  }  
+  }
+
+@Manual{opendatatoronto,
+    title = {opendatatoronto: Access the City of Toronto Open Data Portal},
+    author = {Sharla Gelfand},
+    year = {2022},
+    note = {R package version 0.1.5},
+    url = {https://CRAN.R-project.org/package=opendatatoronto},
+  }
+
+@Manual{janitor,
+    title = {janitor: Simple Tools for Examining and Cleaning Dirty Data},
+    author = {Sam Firke},
+    year = {2023},
+    note = {R package version 2.2.0},
+    url = {https://CRAN.R-project.org/package=janitor},
+  }
   
-  
-@Manual{citeLahman,
-    title = {{Lahman: Sean `Lahman' Baseball Database}},
-    author = {Michael Friendly and Chris Dalzell and Martin Monkman and Dennis Murphy},
-    year = {2020},
-    note = {R package version 8.0-0},
-    url = {https://CRAN.R-project.org/package=Lahman},
-  }  
-  
-  
-@article{gebru2021datasheets,
-  title={Datasheets for datasets},
-  author={Gebru, Timnit and Morgenstern, Jamie and Vecchione, Briana and Vaughan, Jennifer Wortman and Wallach, Hanna and Iii, Hal Daum{\'e} and Crawford, Kate},
-  journal={Communications of the ACM},
-  volume={64},
-  number={12},
-  pages={86--92},
-  year={2021},
-  publisher={ACM New York, NY, USA}
+@Manual{dplyr,
+    title = {dplyr: A Grammar of Data Manipulation},
+    author = {Hadley Wickham and Romain François and Lionel Henry and Kirill Müller and Davis Vaughan},
+    year = {2023},
+    note = {R package version 1.1.4},
+    url = {https://CRAN.R-project.org/package=dplyr},
+  }
+
+@Manual{readr,
+    title = {readr: Read Rectangular Text Data},
+    author = {Hadley Wickham and Jim Hester and Jennifer Bryan},
+    year = {2024},
+    note = {R package version 2.1.5},
+    url = {https://CRAN.R-project.org/package=readr},
+  }
+
+@InCollection{knitr,
+  booktitle = {Implementing Reproducible Computational Research},
+  editor = {Victoria Stodden and Friedrich Leisch and Roger D. Peng},
+  title = {knitr: A Comprehensive Tool for Reproducible Research in {R}},
+  author = {Yihui Xie},
+  publisher = {Chapman and Hall/CRC},
+  year = {2014},
+  note = {ISBN 978-1466561595},
 }
 
-@Misc{rstanarm,
-    title = {{rstanarm: {Bayesian} applied regression modeling via {Stan}}},
-    author = {Ben Goodrich and Jonah Gabry and Imad Ali and Sam Brilleman},
-    note = {R package version 2.21.3},
-    year = {2022},
-    url = {https://mc-stan.org/rstanarm/},
-  }
-  
-@Manual{palmerpenguins,
-    title = {{palmerpenguins: Palmer Archipelago (Antarctica) penguin data}},
-    author = {Allison Marie Horst and Alison Presmanes Hill and Kristen B Gorman},
-    year = {2020},
-    note = {R package version 0.1.0},
-    doi = {10.5281/zenodo.3960218},
-    url = {https://allisonhorst.github.io/palmerpenguins/},
-  }
-  
-  
-@book{tellingstories,
-    title = {Telling Stories with Data},
-    author = {Rohan Alexander},
-    year = {2023},
-    publisher = {Chapman; Hall/CRC},
-    url = {https://tellingstorieswithdata.com/}
-  }  
-  
-  
-
-@Manual{shelter,
-    title = {Deaths of Shelter Residents},
-    author = {{Toronto Shelter & Support Services}},
+@Manual{kableExtra,
+    title = {kableExtra: Construct Complex Table with 'kable' and Pipe Syntax},
+    author = {Hao Zhu},
     year = {2024},
-    note = {As accessed 2024-10-02.},
-    url = {https://open.toronto.ca/dataset/deaths-of-shelter-residents/},
-  }  
+    note = {R package version 1.4.0},
+    url = {https://CRAN.R-project.org/package=kableExtra},
+  }
+
+@Manual{arrow,
+    title = {arrow: Integration to 'Apache' 'Arrow'},
+    author = {Neal Richardson and Ian Cook and Nic Crane and Dewey Dunnington and Romain François and Jonathan Keane and Dragoș Moldovan-Grünfeld and Jeroen Ooms and Jacob Wujciak-Jens and {Apache Arrow}},
+    year = {2024},
+    note = {R package version 17.0.0.1},
+    url = {https://CRAN.R-project.org/package=arrow},
+  }
+
+@Book{ggplot2,
+    author = {Hadley Wickham},
+    title = {ggplot2: Elegant Graphics for Data Analysis},
+    publisher = {Springer-Verlag New York},
+    year = {2016},
+    isbn = {978-3-319-24277-4},
+    url = {https://ggplot2.tidyverse.org},
+  }
+
+@Article{testthat,
+    author = {Hadley Wickham},
+    title = {testthat: Get Started with Testing},
+    journal = {The R Journal},
+    year = {2011},
+    volume = {3},
+    pages = {5--10},
+    url = {https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf},
+  }
+  
+@Book{tellingstories,
+  title = {Telling Stories with Data},
+  author = {Rohan Alexander},
+  year = {2023},
+  publisher = {Chapman & Hall/CRC},
+  url = {https://tellingstorieswithdata.com/}
+}
