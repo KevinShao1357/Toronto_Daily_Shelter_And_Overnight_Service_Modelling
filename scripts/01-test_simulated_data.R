@@ -8,42 +8,74 @@
 # Any other information needed? None
 
 #### Workspace setup ####
+# Download the relevant packages needed for downloading required data if
+# necessary. If packages are already downloaded, comment out the following lines.
+install.packages("testthat")
+
 # Read the packages needed to download required data
 library(tidyverse)
 library(arrow)
+library(testthat)
 
 # Read the dataset and save it into cleaned_data
 simulated_data <- read_parquet("data/00-simulated_data/simulated_data.parquet")
 
 #### Test data ####
 # Test that the dataset has 6 columns in total
-ncol(simulated_data) == 6
+test_that("Testing number of columns of simulated data", {
+  expect_equal(ncol(simulated_data), 6)
+})
 
 # Test if there are any NA values in the dataset
-sum(is.na(simulated_data)) == 0
+test_that("Testing if there are NA values", {
+  expect_equal(all(is.na(simulated_data)), FALSE)
+})
 
 # Test if the value in count is always less or equal to the value in capacity
-all(simulated_data$count <= simulated_data$capacity)
+test_that("Count is always less than or equal to capacity", {
+  expect_true(all(simulated_data$count <= simulated_data$capacity))
+})
 
 # Check if all elements in the row 'service_type' are included in the ideal set
 # of types.
-all(simulated_data$service_type %in% c("Shelter", "Warming Centre",
-                                     "24-Hour Respite Site", "Top Bunk Contingency Space"))
+service_types = c("Shelter", "Warming Centre", "24-Hour Respite Site", 
+                 "Top Bunk Contingency Space")
+
+test_that("All service types are valid", {
+  expect_true(all(simulated_data$service_type %in% service_types))
+})
 
 # Test if all elements in the row 'program_area' are included in the ideal set
 # of types.
-all(simulated_data$program_area %in% c("Base Program - Refugee", "Winter Programs",
-                                     "Base Shelter and Overnight Services System", 
-                                     "Temporary Refugee Response"))
+program_areas = c("Base Program - Refugee", "Winter Programs",
+                 "Base Shelter and Overnight Services System", 
+                 "Temporary Refugee Response")
+
+test_that("All program areas are valid", {
+  expect_true(all(simulated_data$program_area %in% program_areas))
+})
 
 # Test if all elements in the row 'classification' are valid
-all(simulated_data$classification %in% c("Emergency", "Transitional"))
+valid_classifcations = c("Emergency", "Transitional")
+
+test_that("All classifications are valid", {
+  expect_true(all(simulated_data$classification %in% valid_classifcations))
+})
 
 # Test if all elements in the row 'occupancy_rate' are valid
-all(simulated_data$occupancy_rate >= 0)
-all(simulated_data$occupancy_rate <= 100)
+test_that("Occupancy rate greater or equal to 0", {
+  expect_true(all(simulated_data$occupancy_rate >= 0))
+})
+
+test_that("Occupancy rate less or equal to 100", {
+  expect_true(all(simulated_data$occupancy_rate <= 100))
+})
 
 # Test if all other columns are valid
-all(simulated_data$capacity >= 0)
-all(simulated_data$count >= 0)
+test_that("Capacity greater or equal to zero", {
+  expect_true(all(simulated_data$capacity >= 0))
+})
 
+test_that("Count greater or equal to zero", {
+  expect_true(all(simulated_data$count >= 0))
+})

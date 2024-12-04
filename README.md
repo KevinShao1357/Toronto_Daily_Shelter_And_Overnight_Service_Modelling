@@ -1,30 +1,32 @@
 # Starter folder
 
-## Overview
-
-This repo provides students with a foundation for their own projects associated with *Telling Stories with Data*. You do not need every aspect for every paper and you should delete aspects that you do not need.
-
-
 ## File Structure
 
 The repo is structured as:
 
--   `data/raw_data` contains the raw data as obtained from X.
--   `data/analysis_data` contains the cleaned dataset that was constructed.
--   `model` contains fitted models. 
--   `other` contains relevant literature, details about LLM chat interactions, and sketches.
--   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
+-   `data/00-simulated_data` contains the simulated data as obtained from the 
+     chosen Open Data Toronto dataset as a parquet file, which decreases the 
+     size of the dataset, which ideally has the same structure as the cleaned
+     dataset. The specific file is named as `simulated_data.parquet`.
+-   `data/01-raw_data` contains the raw data as obtained from the chosen Open 
+     Data Toronto dataset as a parquet file, which decreases the size of the 
+     dataset. The specific file is named as `raw_data.parquet`.
+-   `data/02-analysis_data` contains the cleaned dataset that was constructed
+     based on the raw dataset obtained from the Open Data Toronto server. The
+     analysis data is named as `analysis_data.parquet`.
+-   `model` contains the fitted multivariate linear regression model, saved as
+     a rds file that is named as `linear_regression_model.rds`. 
+-   `other` contains the folder `sketches`, which contains relevant sketches 
+     that are used to present my own general idea of how the cleaned dataset
+     should ideally look like. The folder `llm_usage` provides the complete chat
+     history between me and ChatGPT
+-   `paper` contains the files used to generate the paper, including the Quarto 
+     document and reference bibliography file, as well as the PDF of the paper. 
 -   `scripts` contains the R scripts used to simulate, download and clean data.
 
 
 ## Statement on LLM usage
 
-Aspects of the code were written with the help of the auto-complete tool, Codriver. The abstract and introduction were written with the help of ChatHorse and the entire chat history is available in inputs/llms/usage.txt.
-
-## Some checks
-
-- [ ] Change the rproj file name so that it's not starter_folder.Rproj
-- [ ] Change the README title so that it's not Starter folder
-- [ ] Remove files that you're not using
-- [ ] Update comments in R scripts
-- [ ] Remove this checklist
+Parts of the code is written with the use of ChatGPT. Complete chat history
+is included in the document inside the `llm_usage` file, which is part of the 
+`others` folder.
