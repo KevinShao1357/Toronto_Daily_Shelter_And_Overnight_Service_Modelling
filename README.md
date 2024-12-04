@@ -1,6 +1,4 @@
-# Starter folder
-
-## File Structure
+# File Structure
 
 The repo is structured as:
 
@@ -24,8 +22,7 @@ The repo is structured as:
      document and reference bibliography file, as well as the PDF of the paper. 
 -   `scripts` contains the R scripts used to simulate, download and clean data.
 
-
-## Statement on LLM usage
+# Statement on LLM usage
 
 Parts of the code is written with the use of ChatGPT. Complete chat history
 is included in the document inside the `llm_usage` file, which is part of the 
