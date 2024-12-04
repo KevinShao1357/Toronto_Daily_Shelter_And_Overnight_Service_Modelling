@@ -19,16 +19,6 @@ bibliography: references.bib
 #| message: false
 #| echo: false
 
-# Download the relevant packages needed for downloading required data if
-# necessary. If packages are already downloaded, comment out the following lines.
-install.packages("opendatatoronto")
-install.packages("janitor")
-install.packages("dplyr")
-install.packages("readr")
-install.packages("gt")
-install.packages("AER")
-install.packages("kableExtra")
-
 # Load the necessary packages
 library(tidyverse)
 library(opendatatoronto)
@@ -39,9 +29,10 @@ library(gt)
 library(AER)
 library(knitr)
 library(kableExtra)
+library(arrow)
 
 # Read and save the cleaned dataset
-cleaned_data2 <- read.csv(here::here("data/02-analysis_data/analysis_data.csv"))
+cleaned_data2 <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
 ```
 
 
@@ -51,7 +42,9 @@ Canada provides shelters for people in need, such as refugees, the homeless, and
 
 To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multivariate linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the largest city in Canada, and is also the scope of our chosen dataset. We also set the city of where the shelter is located to Downtown Toronto, and also set the classification of shelters based on gender and age to mixed adult, which are all the ones of their category with the highest frequency. As mentioned in the previous paragraph, we also chose our response variable to be number of beds, a choice between shelters grouped by rooms or shelters grouped by beds. The reasoning behind these choices are explained in the 'Measurement' of the data section (Section @sec-data).
 
-The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-results covers the multiple linear regression model used in this paper; @sec-results provides results obtain from the derived model; and @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved.
+After finishing the derivation of the final multivariate linear regression model, we can find that the model satisfies most linearity assumptions, but its residual versus fitted plot shows that the homoscedasticity (constant variance) assumption is violated. Also, from the qq plot, we can also see that the normality of errors assumption may be violated too, although this is unsure due to the relatively ideal p-value, r-squared, and residual standard error. Overall, we can see that there is the possibility that modelling the predictor variables, such as occupied beds, occupancy rate, types of shelters, and types of operations, to predict the number of beds needed per day at a location providing daily shelter and/or overnight service, which can reflect the most-likely number of beds needed for a location providing such services, which can determine the size and number of shelters which renovation is needed, and whether new shelters should be built at locations, which may precisely control the amount of investment by Canadian government needed on facilities providing daily shelter and/or overnight service. However, there are still some limitations and further discussions to this result, which is discussed in detail in @sec-discussion.
+
+The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-model covers the multivariate linear regression model used in this paper; @sec-results provides results obtain from the derived model; and @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved.
 
 # Data {#sec-data}
 
@@ -71,7 +64,7 @@ The primary objective of this paper is to evaluate the validity of predicting th
 #| message: false
 
 kable(cleaned_data2[1:10,]) %>%
-  kable_styling(font_size = 10, position = "center", full_width = FALSE)
+  kable_styling(font_size = 10, full_width = FALSE)
 
 ```
 
@@ -91,7 +84,7 @@ Then, we determine our predictor variables, made up of three categorical variabl
 
 ## Outcome variables (And Estimand)
 
-The outcome variable, or response variable, for this multivariate linear regression model, corresponds to the variable 'count' in the cleaned data set, which in context of the dataset, is the number of occupied beds during this day. By averaging this variable's statistics over about a year, we may get a representative value of the number of beds necessary for a shelter with the given statistics of the predictor variables. Note that the variable 'count' should be less or equal to the current capacity of the corresponding shelter. Its summary statistics are presented in the following @tbl-table2.
+The outcome variable, or response variable, for this multivariate linear regression model, corresponds to the variable 'count' in the cleaned data set, which in context of the dataset, is the number of occupied beds during this day of a specific location that provides daily shelter and/or overnight service. By averaging this variable's statistics over about a year, we may get a representative value of the number of beds necessary for a shelter with the given statistics of the predictor variables. Note that the variable 'count' should be less or equal to the current capacity of the corresponding shelter. Its summary statistics are presented in the following @tbl-table2.
 
 ```{r}
 #| label: tbl-table2
@@ -219,142 +212,196 @@ knitr::kable(c(mean = mean(cleaned_data2$occupancy_rate), standard_deviation = s
 ```
 From @tbl-table7, we can conclude that occupancy rate of locations are all pretty much near 100, with a relatively low standard deviation of 5 percentage points, so most locations are relatively full, but we can still consider it as a predictor variable, but needs careful consideration when interpreting results.
 
-# Model
+# Model {#sec-model}
 
-Now we start to create the multivariate linear regression model, with the set predictor and response variables.
+## Model Set-Up (Including Diagnostics and Checking)
 
-## Model set-up
+Now we start to create the multivariate linear regression model, with the set predictor and response variables. Specifically, the predictor variables in this model are made up of three categorical variables and two numerical variables. The three categorical predictor variables are service type, program area, and classification. The two numerical predictor variables are capacity and occupancy rate. The response variable is count, which is the number of occupied beds during a day for a specific location. The detailed descriptions of the predictor and response variables can be found in the 'Outcome variables (And Estimand)' and 'Predictor Variables' sections in @sec-data.
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+We first create a basic multivariate linear regression model with the set predictor and response variables. However, we notice that by official descriptions by Open Data Toronto (@Dataset) that occupancy rate is equal to count divided by capacity. Therefore, there is likely a strong relationship between the two predictor variables occupancy rate and capacity, so we add an interaction variable between occupancy rate and capacity, and construct another multivariate linear regression model.
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
-# Results
-
-Our results are summarized in @tbl-modelresults.
+We now have to test the validity of the two models, evaluating which one is better. To do that, we create @tbl-table8 below, presenting a comparison between the p-value, r-squared, and standard error of the two models, with 'Original_Model' representing the first one and 'Interaction_Model' being the one with the added interaction terms.
 
 ```{r}
+#| label: tbl-table8
+#| tbl-cap: "Comparsion of Features of Original and Interacted Model"
 #| echo: false
-#| eval: true
 #| warning: false
 #| message: false
 
-library(rstanarm)
+# Create both the original model and the model with interaction terms
+model_a <- lm(count ~ service_type + program_area + classification + capacity +
+              occupancy_rate, data = cleaned_data2)
+model_b <- lm(count ~ service_type + program_area + classification + capacity +
+              occupancy_rate + occupancy_rate:capacity, data = cleaned_data2)
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
+# Summarize the model using R functions
+model_sum1 <- summary(model_a)
+model_sum2 <- summary(model_b)
 
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
+# Calculate p-value for each using R functions
+p_value1 <- pf(
+  model_sum1$fstatistic[1],  
+  model_sum1$fstatistic[2],  
+  model_sum1$fstatistic[3],  
+  lower.tail = FALSE  
+)
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
+p_value2 <- pf(
+  model_sum2$fstatistic[1],  
+  model_sum2$fstatistic[2],  
+  model_sum2$fstatistic[3],  
+  lower.tail = FALSE  
+)
+
+# Extract the r-squared and residual standard errors for each
+r_squared1 <- model_sum1$r.squared
+residual_std_error1 <- model_sum1$sigma
+r_squared2 <- model_sum2$r.squared
+residual_std_error2 <- model_sum2$sigma
+
+# Create a data frame with three rows and two columns that contains the data
+table_data <- data.frame(
+  Label = c("P-Value", "R-Squared", "Residual Standard Error"),
+  Original_Model = c(p_value1, r_squared1, residual_std_error1),
+  Interaction_Model = c(p_value2, r_squared2, residual_std_error2)
+)
+
+# Make the data frame into the final displayed table
+kable(
+  table_data, 
+  col.names = c("", "Original Model", "Interaction Model")
 )
 ```
 
+From the above @tbl-table8, both models have a p-value that is way less than the significance level of 0.05, and both have an r-squared that is extremely close to 1, meaning that a very high proportion of variance of the response variable can be explained by the predictor variables. This implicates that both multivariate linear regression models are highly valid models. However, the residual standard error of the second model with the interaction term is less than that of the first model without the interaction term, so we choose the second model with the interaction term.
+
+Now, the final task is to check if the new model with interaction terms satisfy all linearity assumptions. To finish that, we will first graph the residual versus fitted plot, which is the @fig-figure1 below.
+
+```{r}
+#| label: fig-figure1
+#| tbl-cap: "Residual Versus Fitted Plot of New Model"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Calculate residuals and fitted values respectively
+res <- residuals(model_b)
+fit <- fitted(model_b)
+
+# Create a data frame with these residuals and fitted values
+data_frame1 <- data.frame(
+  residuals = res,
+  fitted = fit
+)
+
+# Graph the residuals versus fitted plot
+ggplot(data_frame1, aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +  # Reference line at 0
+  labs(x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
+
+```
+Here, according to the residuals versus fitted plot presented in @fig-figure1, the linearity of the relationship assumption is satisfied because there is no systematic pattern, since points in this plot are scattered all over the place. Homoscedasticity, is violated, since we see a conical shape, reflecting a variable variance. Therefore, we log the response variable and then graph the qq plot again, as the below @fig-figure2.
+
+```{r}
+#| label: fig-figure2
+#| tbl-cap: "Residual Versus Fitted Plot of New Model With Response Variable Logged"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Create the new linear model accordingly
+model_c <- lm(log(count) ~ service_type + program_area + classification + capacity +
+              occupancy_rate + occupancy_rate:capacity, data = cleaned_data2)
+
+# Calculate residuals and fitted values respectively
+res3 <- residuals(model_c)
+fit3 <- fitted(model_c)
+
+# Create a data frame with these residuals and fitted values
+data_frame2 <- data.frame(
+  residuals = res3,
+  fitted = fit3
+)
+
+# Graph the residuals versus fitted plot
+ggplot(data_frame2, aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +  # Reference line at 0
+  labs(x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
+
+```
+@fig-figure2 shows that now, the residual versus fitted plot shows that it both violates the linearity relationship assumption, since there is a clear pattern of the datapoints, and the homoscedasticity assumption, since the variance still varies, as seen in the graph. Therefore, the new model with logged response variable is even worse than the one that only added the interaction term, so we return the model that added the interaction terms. Now, we will continue to analyze the linearity assumptions by graphing the qq plot, as displayed in @fig-figure3 below.
+
+```{r}
+#| label: fig-figure3
+#| tbl-cap: "QQ Plot for Model With Interaction Terms But Not Logged Response Variable"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Create dataframe for residuals
+residuals_df2 <- data.frame(
+  res = res,
+  theoretical = qnorm(ppoints(length(res)))
+)
+
+# Construct the qq plot
+ggplot(residuals_df2, aes(x = theoretical, y = res)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Q-Q Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+
+```
+Now, as shown in the qq plot displayed in @fig-figure3, there are many elements built arount y = 0, but from the overall perspective, it still has relatively no pattern. Therefore, we can still say that in a relative basis, we can still say that this model adheres to normal errors assumptions, but we must also take consideration that it does not follow the red line. However, also taking into the fact that the p-value, r-squared, and residual standard error, so we can still make the conclusion that we accept this multivariate linear regression model.
+
+# Results {#sec-results}
+
+Our results are summarized in
 
 
+# Discussion {#sec-discussion}
 
-# Discussion
+Although our results of the constructed multivariate linear regression model do give a possibility that using statistical modelling, the number of beds needed per day at a location providing daily shelter and/or overnight service, which can help maximize efficiency of the investments on such facilities. However, there are still a few limitations that may lead in inaccuracies of our model.
 
-## First discussion point {#sec-first-point}
+## Improvements to Linearity Violations
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+### Homoscedasticity Violation
 
-## Second discussion point
+First of all, The constructed multivariate linear regression model still violates the homoscedasticity, or constant variance, assumption. In order to fulfill that assumption, one approach one could do furthermore is performing the box-cox transformation, which transforms the response variable y to y^(a) using a power parameter, which is denoted as a here. There is a boxcox() function provided in R, and one can use this function along the linear model variable derived using the lm() function to get a number a. Then, one can use the list of values of a and the corresponding transformations made to the response variable. For example, when a takes values around 1, no transformation needs to be done, but when a takes values around 0, a logarithm function can be made on the response variable. The final newly-transformed response variable maximizes the log-likelihood of the transformed model, and will likely reduce the extent of violation of homoscedasticity.
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+### Normality of Errors Violation
 
-## Third discussion point
+The constructed multivariate linear regression model also shows possible violations in the linearity assumption 'Normality of Errors.' First of all, the violation of this assumption does not necessarily affect results of the prediction of response variahbles, which is part of the reason why no further approach was made despite a possible 'Normality of Errors' violation was observed. However, some approaches could also be taken to possibly improve the situation. First of all, one could consider adding polynomial terms between the two numerical variables, or including more interaction terms either between numerical and categorical or two categorical variables. However, we must still point out that due to the relatively good-performing p-value, r-squared, and standard residual errors, it is also relatively acceptable to stop at this point despite violating the 'Normality of Errors' assumptions.
 
-## Weaknesses and next steps
+## Other Ways to Improve the Model
 
-Weaknesses and next steps should also be included.
+### Enlargening The Scope
+
+Another way to possibility improve the constructed multivariate linear regression model is to enlarge the scope. In this linear regression model, the chosen city was set to be Downtown Toronto, which is only one part of Greater Toronto Area (GTA), and so is an even smaller part of Canada, which is the world's second largest country. To make the model more representative of Canada as a whole, and to make it more useful for predicting the needed number of beds for a location per day, we can enlargen the scope to the entire GTA, or possibly the entire province of Ontario, which may make results of the model more effective for predicting the amount of investment needed in these facilities, or to make good use of current investment budgets on such facilities providing daily shelter and overnight services.
+
+Moreover, in this linear regression model, the gender and age that a specific location provides service to is also set to 'Mixed Adults'. To make the linear regression model even more effective and accurate, one can also enlarge this scope to contain all genders and ages by directly making it a categorical variable. One can also consider making independent linear regression models, or even make use of the more-complicated Bayesian model, for each of the following specific types of genders/ages of groups of people provided by locations, further increasing precision.
+
+### Making The Date a Predictor Variable
+
+In this derived multivariate linear regression model, date is not a predictor variable, and the model is based on a dataset that only considers data from January 1 to December 1, 2024. However, one could make it a continuous predictor variable to increase precision and/or accuracy. For example, if the Canadian government decide to invest in such facilities that provide daily shelter and/or overnight service on November 16, 2026, one could make use of the newly-derived function, and put the date as the date predictor variable, and get a rough prediction of how many beds would be occupied at that specific date and location for a specific facility, aiding them to effectively use investments to improve the entire shelter system.
+
+## Further Discussions
+
+Using the current multivariate linear regression model, one can get an estimate of occupied beds at a random day at a specific location of such a facility. By simply considering the amount of facilities providing daily shelter and overnight service, one can get an estimate of the total occupied beds at a random at a specific location of all such facilities in Downtown Toronto. After estimating the size needed for each bed, one can get the total area of facilities needed in Downtown Toronto, which gives the Canadian government a sense of which facilities needs to be renovated, and whether there are any new facilities needed to be built at locations due to shortage of space and/or old facilities that can be stopped using due to excessive space. Actually, if found useful after a time period, this approach can be used to the entire GTA(Greater Toronto Area), and can further expand to the entire Ontario, and later, the entire Canada in the future if proved to be efficient enough. 
 
 \newpage
 
 \appendix
 
 # Appendix {-}
-
-
-# Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
 
 
 

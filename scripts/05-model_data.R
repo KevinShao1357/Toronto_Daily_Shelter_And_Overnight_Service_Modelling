@@ -69,28 +69,51 @@ ggplot(data, aes(x = fitted, y = residuals)) +
   theme_minimal()
 
 # The residuals do randomly scatter around 0, so it satisfies linearity (randomly
-# scattered), and almost satisfies homoscedasticity (There is only a very faint
-# fan shape).
-# Now let's construct a qq plot
+# scattered), but it violates homoskedacity, so we log the response variable and try again
+model3 <- lm(log(count) ~ service_type + program_area + classification + capacity +
+              occupancy_rate + capacity:occupancy_rate, data = analysis_data)
+
+# Graph the residual plot again with the revised model
+res3 <- residuals(model3)
+fit3 <- fitted(model3)
+
+data3 <- data.frame(
+  residuals = res3,
+  fitted = fit3
+)
+
+ggplot(data3, aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +  # Reference line at 0
+  labs(title = "Residual Plot",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
+
+# Linearity assumption is violated (since we see a clear pattern), and homoscedasticity
+# also violated, so we still use original model
 
 # Create dataframe for residuals
-residuals_df <- data.frame(
-  res2 = res,
+residuals_df2 <- data.frame(
+  res = res,
   theoretical = qnorm(ppoints(length(res)))
 )
 
-# Graph the QQ Plot
-ggplot(residuals_df, aes(x = theoretical, y = res2)) +
+# Now let's construct a qq plot
+ggplot(residuals_df2, aes(x = theoretical, y = res)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(title = "Q-Q Plot of Residuals",
        x = "Theoretical Quantiles",
        y = "Sample Quantiles")
 
-# The QQ Plot is also satisfied since residuals align along the diagonal
-# Since all linear assumptions are satisfied, we save the model into an RDS file
+# This qq plot has many elements around the line y = 0, but from the overall
+# perspective it has no pattern, so it is still relatively adheres to normal errors,
+# but it also does not follow the red line. However, the p-value, r-squared,
+# and standard residual errors are all valid, so we still use this model
 
 #### Save model ####
+# Now we save this model
 saveRDS(
   model2,
   file = "models/linear_regression_model.rds"
