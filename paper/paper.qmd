@@ -1,5 +1,5 @@
 ---
-title: "Predictions of Occupied Beds at Faculties Providing Daily Shelter And/Or Overnight Services Using Multivariate Linear Regression Leads To Possible Maximized Efficient of Government Investment To These Faculties"
+title: "Predictions of Occupied Beds at Faculties Providing Daily Shelter And/Or Overnight Services Using Multivariate Linear Regression Leads To Possible Maximized Efficiency of Government Investment To These Faculties"
 author: 
   - Kevn Shao
 thanks: "Code and data are available at: https://github.com/KevinShao1357/Toronto_Daily_Shelter_And_Overnight_Service_Modelling.git."
