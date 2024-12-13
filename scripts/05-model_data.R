@@ -16,6 +16,9 @@ library(dplyr)
 library(janitor)
 library(ggplot2)
 library(arrow)
+library(MASS)
+library(car)
+library(knitr)
 
 #### Read data ####
 # Read the saved parquet file
@@ -28,6 +31,18 @@ model <- lm(count ~ service_type + program_area + classification + capacity +
 
 # Present the summary statistics of this model
 summary(model)
+
+# First calculate residuals for first model
+res_first <- residuals(model)
+
+# Also create fitted values for first model
+fit_first <- fitted(model)
+
+# Create dataframe for first model
+data_first <- data.frame(
+  res = res_first,
+  fitted = fit_first
+)
 
 # Since occupancy rate is equal to count dived by capacity, it is likely to make
 # the model more ideal if we add an interaction term between occupancy rate and
@@ -69,7 +84,7 @@ ggplot(data, aes(x = fitted, y = residuals)) +
   theme_minimal()
 
 # The residuals do randomly scatter around 0, so it satisfies linearity (randomly
-# scattered), but it violates homoskedacity, so we log the response variable and try again
+# scattered), but it violates homoscedasticity, so we log the response variable and try again
 model3 <- lm(log(count) ~ service_type + program_area + classification + capacity +
               occupancy_rate + capacity:occupancy_rate, data = analysis_data)
 
@@ -90,33 +105,106 @@ ggplot(data3, aes(x = fitted, y = residuals)) +
        y = "Residuals") +
   theme_minimal()
 
-# Linearity assumption is violated (since we see a clear pattern), and homoscedasticity
-# also violated, so we still use original model
+# Linearity assumption is still violated (since we see a clear pattern), and 
+# homoscedasticity also still violated. Therefore, the logged model has no 
+# improvement, so we now need to compare the original and the pre-logged model
 
-# Create dataframe for residuals
+# Create dataframe of residuals for the first and pre-logged models
 residuals_df2 <- data.frame(
   res = res,
   theoretical = qnorm(ppoints(length(res)))
 )
 
-# Now let's construct a qq plot
-ggplot(residuals_df2, aes(x = theoretical, y = res)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(title = "Q-Q Plot of Residuals",
+residuals_df_first <- data.frame(
+  res = res_first,
+  theoretical = qnorm(ppoints(length(res_first)))
+)
+# We graph the qq plot for both the original and pre-logged models
+ggplot(residuals_df2, aes(sample = res)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "QQ Plot of Residuals",
        x = "Theoretical Quantiles",
        y = "Sample Quantiles")
 
-# This qq plot has many elements around the line y = 0, but from the overall
-# perspective it has no pattern, so it is still relatively adheres to normal errors,
-# but it also does not follow the red line. However, the p-value, r-squared,
-# and standard residual errors are all valid, so we still use this model
+ggplot(residuals_df_first, aes(sample = res_first)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "QQ Plot for Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+
+# The two qq plots have barely any difference, but since there is a logical
+# relationship between capacity and occupancy rate, we still choose the
+# pre-logged model (preserving the interaction term)
+
+# Now we proceed with the box-cox transformation to get the ideal transformation]
+# on the response variable
+
+# Perform box-cox transformation 
+boxcox_result <- boxcox(model2, lambda = seq(-2, 2, by = 0.1))
+
+# Find the optimal lambda
+optimal_lambda <- boxcox_result$x[which.max(boxcox_result$y)]
+
+# Transform Y and refit the model
+if (optimal_lambda == 0) {
+  analysis_data$count_transformed <- log(mydata$count)
+} else {
+  analysis_data$count_transformed <- (analysis_data$count^optimal_lambda - 1) / optimal_lambda
+}
+
+# Refit the model with the transformed Y
+new_model <- lm(count_transformed ~ service_type + program_area + classification + capacity +
+                  occupancy_rate + capacity:occupancy_rate, data = analysis_data)
+
+# Get the new model's residuals and fitted values, combine them into a dataframe
+# and then create a residuals versus fitted plot
+res_new <- residuals(new_model)
+fit_new <- fitted(new_model)
+
+data_new <- data.frame(
+  residuals = res_new,
+  fitted = fit_new
+)
+
+ggplot(data_new, aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +  # Reference line at 0
+  labs(title = "Residual Plot",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
+
+# First create a new dataframe for residuals of the new model, and then get
+# the new model's QQ plot
+residuals_df_new <- data.frame(
+  res = res_new,
+  theoretical = qnorm(ppoints(length(res_new))
+  )
+)
+
+ggplot(residuals_df_new, aes(sample = res_new)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "QQ Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+
+# From the graphs of the qq plot and residuals versus fitted plot,
+# the qq plot is now better, with only strong deviations at the end with high
+# theoretical quantiles, and at the end with negative theoretical quantiles,
+# there is now only gradual deviations from the ideal line. However, the residuals
+# versus fitted plot suggests even stronger heteroscedasticity, and suggests
+# we may need to add polynomial terms and delete some influential points, but 
+# the larger possibility is that we should use another model, such as nonlinear
+# regression models, machine learning methods. We can also make use of
+# generalized additive models (GAMs) or random forests, but these models are over
+# the scope of my current knowledge, so we just stop here and save the current model.
 
 #### Save model ####
 # Now we save this model
 saveRDS(
-  model2,
+  new_model,
   file = "models/linear_regression_model.rds"
 )
-
-
