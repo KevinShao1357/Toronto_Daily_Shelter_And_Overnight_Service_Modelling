@@ -1,11 +1,11 @@
 ---
-title: "Predictions of Occupied Beds at Faculties Providing Daily Shelter And/Or Overnight Services Using Multivariate Linear Regression Leads To Possible Maximized Efficiency of Government Investment To These Faculties"
+title: "Predictions of Occupied Beds at Faculties Providing Daily Shelter And/Or Overnight Services Using Multivariate Linear Regression Implies That Modelling This Situation Using Other Models Would Be Better"
 author: 
   - Kevn Shao
 thanks: "Code and data are available at: https://github.com/KevinShao1357/Toronto_Daily_Shelter_And_Overnight_Service_Modelling.git."
 date: today
 date-format: long
-abstract: "Recently, the Canadian government expresses interest in continuous investment in government faculties providing daily shelter and/or overnight services. With the aim to evaluate the validity of predicting the occupied beds at a related faculties at a day, which can reflect the demand of such services at such locations, a multivariate linear regression model is constructed, with the city to Downtown Toronto, and the gender and age set to Mixed Adults. Five predictor variables are used, including two numerical variables, occupancy rate and capacity, and three categorical variables, including classification, service types, and program types. The final results showed a possible violation of linearity assumptions such as homoscedasticity and normality of errors, but also reflects the possibility of predicting the appropriate amount of investment to these facilities using this statistical approach."
+abstract: "Recently, the Canadian government expresses interest in continuous investment in government faculties providing daily shelter and/or overnight services. With the aim to evaluate the validity of predicting the occupied beds at a related faculties at a day, which can reflect the demand of such services at such locations, a multivariate linear regression model is constructed, with the city to Downtown Toronto, and the gender and age set to Mixed Adults. Five predictor variables are used, including two numerical variables, occupancy rate and capacity, and three categorical variables, including classification, service types, and program types. The final results showed likely violations of linearity assumptions such as homoscedasticity and normality of errors, and suggests that we may need to consider either proceed deeper in the linear regression model by adding nonlinear terms for predictor variables, identifying and deleting influential points, and/or consider the weighted-least squares (WLS) method, or consider switching to other more-flexible model types."
 format: pdf
 toc: true
 number-sections: true
@@ -40,7 +40,7 @@ Canada provides shelters for people in need, such as refugees, the homeless, and
 
 To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multivariate linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the largest city in Canada, and is also the scope of our chosen dataset. We also set the city of where the shelter is located to Downtown Toronto, and also set the classification of shelters based on gender and age to mixed adult, which are all the ones of their category with the highest frequency. As mentioned in the previous paragraph, we also chose our response variable to be number of beds, a choice between shelters grouped by rooms or shelters grouped by beds. The reasoning behind these choices are explained in the 'Measurement' of the data section (Section @sec-data).
 
-After finishing the derivation of the final multivariate linear regression model, we can find that the model satisfies most linearity assumptions, but its residual versus fitted plot shows that the homoscedasticity (constant variance) assumption is violated. Also, from the qq plot, we can also see that the normality of errors assumption may be violated too, although this is unsure due to the relatively ideal p-value, r-squared, and residual standard error. Overall, we can see that there is the possibility that modelling the predictor variables, such as occupied beds, occupancy rate, types of shelters, and types of operations, to predict the number of beds needed per day at a location providing daily shelter and/or overnight service, which can reflect the most-likely number of beds needed for a location providing such services, which can determine the size and number of shelters which renovation is needed, and whether new shelters should be built at locations, which may precisely control the amount of investment by Canadian government needed on facilities providing daily shelter and/or overnight service. However, there are still some limitations and further discussions to this result, which is discussed in detail in @sec-discussion.
+After finishing the derivation of the final multivariate linear regression model, including the use of a box-cox transformation during the process, we can find that the model violates many linearity assumptions, such as linear relationship, normality of errors, and homoscedasticity (constant variance). The new model's residuals versus fitted and qq plots implicate that influential points should be identified and eliminated, and nonlinear transformations should be put on predictor variables. It can then be concluded that further steps can be made to the current multivariate linear regression model, but also more-flexible alternative model types, such as generalized additive models (GAMs), can be implemented to fulfill the same purpose with more precise final results. More detailed limitations and discussions to this result is discussed in detail in @sec-discussion.
 
 The remainder of this paper is structured as follows: @sec-data details the data and measurement process of the chosen dataset; @sec-model covers the multivariate linear regression model used in this paper; @sec-results provides results obtain from the derived model; @sec-discussion includes discussions, such as implications and future steps, of our model, and how our results can in turn be furthermore improved; @sec-appendix is about analysis of observational data and surveys, and is the appendix of this paper.
 
@@ -50,7 +50,7 @@ The remainder of this paper is structured as follows: @sec-data details the data
 
 The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R). The book 'Telling Stories with Data' (@tellingstories) was also used to complete this paper.
 
-Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), and testthat (@testthat).
+Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), testthat (@testthat), car (@car), knitr (@knitr) and MASS (@MASS).
 
 The primary objective of this paper is to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, as mentioned in the introduction section. The number of beds of a shelter can reflect the necessary size of a shelter, so the general investment amounts of renovating existing shelters and building new shelters can be estimated, which can maximize efficiency of Canadian government's investments in shelters.
 
@@ -218,7 +218,7 @@ From @tbl-table7, we can conclude that occupancy rate of locations are all prett
 
 Now we start to create the multivariate linear regression model, with the set predictor and response variables. Specifically, the predictor variables in this model are made up of three categorical variables and two numerical variables. The three categorical predictor variables are service type, program area, and classification. The two numerical predictor variables are capacity and occupancy rate. The response variable is count, which is the number of occupied beds during a day for a specific location. The detailed descriptions of the predictor and response variables can be found in the 'Outcome variables (And Estimand)' and 'Predictor Variables' sections in @sec-data.
 
-We first create a basic multivariate linear regression model with the set predictor and response variables. However, we notice that by official descriptions by Open Data Toronto (@Dataset) that occupancy rate is equal to count divided by capacity. Therefore, there is likely a strong relationship between the two predictor variables occupancy rate and capacity, so we add an interaction variable between occupancy rate and capacity, and construct another multivariate linear regression model.
+We first created a basic multivariate linear regression model with the set predictor and response variables. However, we notice that by official descriptions by Open Data Toronto (@Dataset) that occupancy rate is equal to count divided by capacity. Therefore, there is likely a strong relationship between the two predictor variables occupancy rate and capacity, so we add an interaction variable between occupancy rate and capacity, and construct another multivariate linear regression model.
 
 We now have to test the validity of the two models, evaluating which one is better. To do that, we create @tbl-table8 below, presenting a comparison between the p-value, r-squared, and standard error of the two models, with 'Original_Model' representing the first one and 'Interaction_Model' being the one with the added interaction terms.
 
@@ -276,7 +276,9 @@ kable(
 
 From the above @tbl-table8, both models have a p-value that is way less than the significance level of 0.05, and both have an r-squared that is extremely close to 1, meaning that a very high proportion of variance of the response variable can be explained by the predictor variables. This implicates that both multivariate linear regression models are highly valid models. However, the residual standard error of the second model with the interaction term is less than that of the first model without the interaction term, so we choose the second model with the interaction term.
 
-Now, the final task is to check if the new model with interaction terms satisfy all linearity assumptions. To finish that, we will first graph the residual versus fitted plot, which is the @fig-figure1 below.
+Moreover, also note that since the occupancy rate of a shelter is equal to the number of people living in that shelter ("count") divided by the capacity of that shelter. Moreover, when the Toronto city government builds a shelter with a higher capacity, this typically means that they forecast the demand of shelters at this location, so the number of people living in that shelter on average is also typically higher. Therefore, the two variables should have a logical relationship, and so adding an interaction term between the two is also logical.
+
+Now, the next task is to check if the new model with interaction terms satisfy all linearity assumptions. To finish that, we will first graph the residual versus fitted plot, which is the @fig-figure1 below.
 
 ```{r}
 #| label: fig-figure1
@@ -304,7 +306,7 @@ ggplot(data_frame1, aes(x = fitted, y = residuals)) +
   theme_minimal()
 
 ```
-Here, according to the residuals versus fitted plot presented in @fig-figure1, the linearity of the relationship assumption is satisfied because there is no systematic pattern, since points in this plot are scattered all over the place. Homoscedasticity, is violated, since we see a conical shape, reflecting a variable variance. Therefore, we log the response variable and then graph the qq plot again, as the below @fig-figure2.
+Here, according to the residuals versus fitted plot presented in @fig-figure1, the linearity of the relationship assumption is satisfied because there is no systematic pattern, since points in this plot are scattered all over the place. Homoscedasticity, or constant variance, is violated, since we see a conical shape, reflecting a variable variance. Therefore, we log the response variable and then graph the qq plot again, as the below @fig-figure2.
 
 ```{r}
 #| label: fig-figure2
@@ -336,11 +338,13 @@ ggplot(data_frame2, aes(x = fitted, y = residuals)) +
   theme_minimal()
 
 ```
-@fig-figure2 shows that now, the residual versus fitted plot shows that it both violates the linearity relationship assumption, since there is a clear pattern of the datapoints, and the homoscedasticity assumption, since the variance still varies, as seen in the graph. Therefore, the new model with logged response variable is even worse than the one that only added the interaction term, so we return the model that added the interaction terms. Now, we will continue to analyze the linearity assumptions by graphing the qq plot, as displayed in @fig-figure3 below.
+@fig-figure2 shows that now, the residual versus fitted plot shows that it both violates the linearity relationship assumption, since there is a clear pattern of the data points, and the homoscedasticity assumption, since the variance still varies, as seen in the graph. Therefore, the new model with logged response variable is even worse than the one that only added the interaction term, so we return the model that added the interaction terms. 
+
+Our next step is to determine the specific transformation that should be done to the response variable using the box-cox transformation method. Before we do that, we want to check one more time whether to use to use the pre-logged model or the original model. We do that by comparing the qq plots between the two models. @fig-figure3 is the qq plot for the pre-logged model, and @fig-figure4 is the qq plot for the original model.
 
 ```{r}
 #| label: fig-figure3
-#| tbl-cap: "QQ Plot for Model With Interaction Terms But Not Logged Response Variable"
+#| tbl-cap: "Theoretical Versus Sample Quantiles Plot for Pre-logged Model With Interaction Terms"
 #| echo: false
 #| warning: false
 #| message: false
@@ -360,11 +364,101 @@ ggplot(residuals_df2, aes(x = theoretical, y = res)) +
        y = "Sample Quantiles")
 
 ```
-Now, as shown in the qq plot displayed in @fig-figure3, there are many elements built arount y = 0, but from the overall perspective, it still has relatively no pattern. Therefore, we can still say that in a relative basis, we can still say that this model adheres to normal errors assumptions, but we must also take consideration that it does not follow the red line. However, also taking into the fact that the p-value, r-squared, and residual standard error, so we can still make the conclusion that we accept this multivariate linear regression model.
+
+```{r}
+#| label: fig-figure4
+#| tbl-cap: "Theoretical Versus Sample Quantiles Plot for Original Model"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Calculate and save residuals for original model
+res_pre <- residuals(model_a)
+
+# Create dataframe for residuals
+residuals <- data.frame(
+  res = res_pre,
+  theoretical = qnorm(ppoints(length(res_pre)))
+)
+
+# Construct the qq plot
+ggplot(residuals, aes(x = theoretical, y = res)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Q-Q Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+
+```
+
+The two qq plots have barely any difference, and with the previous analysis of the residuals standard errors and p-values, we still eliminate the original model and choose the model with interaction terms but before we log the response variable. Now we proceed with the Box-Cox transformation, update the dataset and model, and then create the residuals versus fitted (@fig-figure5) and qq plot (@fig-figure6) for this new model.
+
+```{r}
+#| label: fig-figure5
+#| tbl-cap: "Residuals Versus Fitted Plot For New Model (After Box-Cox Transformation)"
+#| echo: false
+#| warning: false
+#| message: false
+
+# Perform box-cox transformation 
+boxcox_result <- boxcox(model_b, lambda = seq(-2, 2, by = 0.1), plotit = FALSE)
+
+# Find the optimal lambda
+optimal_lambda <- boxcox_result$x[which.max(boxcox_result$y)]
+
+# Transform Y and refit the model
+if (optimal_lambda == 0) {
+  cleaned_data2$count_transformed <- log(cleaned_data2$count)
+} else {
+  cleaned_data2$count_transformed <- (cleaned_data2$count^optimal_lambda - 1) / optimal_lambda
+}
+
+# Refit the model with the transformed Y
+new_model <- lm(count_transformed ~ service_type + program_area + classification + capacity +
+                  occupancy_rate + capacity:occupancy_rate, data = analysis_data)
+
+# Get the new model's residuals and fitted values, combine them into a dataframe
+# and then create a residuals versus fitted plot
+res_new <- residuals(new_model)
+fit_new <- fitted(new_model)
+
+data_new <- data.frame(
+  residuals = res_new,
+  fitted = fit_new
+)
+
+ggplot(data_new, aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +  # Reference line at 0
+  labs(title = "Residual Plot",
+       x = "Fitted Values",
+       y = "Residuals")
+```
+
+```{r}
+#| label: fig-figure6
+#| tbl-cap: "Theoretical Versus Sample Quantiles Plot For New Model (After Box-Cox Transformation)"
+#| echo: false
+#| warning: false
+#| message: false
+
+ggplot(residuals_df_new, aes(sample = res_new)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "QQ Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+```
+
+The qq plot of the new model after completing the box-cox transformation (@fig-figure6) has improved compared to the previous one. The end with the more negative theoretical quantiles values now only has gradual increasing deviations from the ideal line that the data points should follow, which is marked in red. However, a heavy tail still exists at the end with positive theoretical quantiles, suggesting possible outliers when we only look at the qq plot itself.
+
+Now we observe the residuals versus fitted plot for the new model after the box-cox transformation (@fig-figure5). This plot data points, with the x-axis representing fitted values and the y-axis representing residuals, displays a few semi-circle patterns, which suggests even more severe violations of homoscedasticity, or constant variance. Therefore, I should consider adding polynomial terms at this point, but the method for deciding the specific polynomial terms is over the scope of my knowledge, so I just stop here and save the current model as our temporary final model. Also note that from this residuals versus fitted plot, we see that the new model also violates the linearity relationship assumption, but since it at least provides a possibility to add polynomial terms to our predictor variables, I am on the right track, so I still save this new model.
+
+Note that this 'Model Setup' is only a brief summary of what I did in the model section, and the '05-model_data' file in the scripts section and the file in the models sections contains more details of the model derivation process. Please read the 'README' file for more detailed information of the structure of this Github repository.
 
 # Results {#sec-results}
 
-Our results are summarized in @tbl-table9. Note that the response variable is not logged.
+Our results are summarized in @tbl-table9.
 
 ```{r}
 #| label: tbl-table9
@@ -374,7 +468,7 @@ Our results are summarized in @tbl-table9. Note that the response variable is no
 #| message: false
 
 # Extract coefficients and the intercept
-coef <- coef(model_b)
+coef <- coef(new_model)
 
 # Create a data frame for the coefficients and intercept
 coef_tbl <- data.frame(
@@ -385,25 +479,43 @@ coef_tbl <- data.frame(
 kable(
   coef_tbl,
   col.names = c("Coefficient"),
-  caption = "Coefficients and Intercept of the Multivariate Linear Regression Model"
+  caption = "Coefficients and Intercept for the Linear Regression Model"
 )
 ```
 
+To this point, we can conclude that using multivariate linear regression models to predict the demand of shelters at a location, aimed to precisely control the amount of investment on shelters by Canadian government is a complicated approach, since it includes necessary further steps such as adding polynomial terms, checking influential points, and/or using weighted least squares (WLS) methods. Therefore, we must admit that switching to more flexible models such as generative additive models (GAM) may be a better choice to proceed furthermore.
+
 # Discussion {#sec-discussion}
 
-Although our results of the constructed multivariate linear regression model do give a possibility that using statistical modelling, the number of beds needed per day at a location providing daily shelter and/or overnight service, which can help maximize efficiency of the investments on such facilities. However, there are still a few limitations that may lead in inaccuracies of our model.
+Although the derived results of the constructed multivariate linear regression model violates many linearity assumptions, including homoscedasticity, linear relationship, and normality of errors, and I stop since it is out of scope of my current knowledge, I can still discuss further steps and discussions of previous results.
 
-## Improvements to Linearity Violations
+At this point, please also note that it is also a challenge to predict the average demand of specific shelters (the response variable), since after we proceed with the box-cox transformations, we should not interpret the results by back-transforming again, so it would be hard for predicting the specific values of our response variable.
 
-### Homoscedasticity Violation
+## Next Steps
 
-First of all, The constructed multivariate linear regression model still violates the homoscedasticity, or constant variance, assumption. In order to fulfill that assumption, one approach one could do furthermore is performing the box-cox transformation, which transforms the response variable y to y^(a) using a power parameter, which is denoted as a here. There is a boxcox() function provided in R, and one can use this function along the linear model variable derived using the lm() function to get a number a. Then, one can use the list of values of a and the corresponding transformations made to the response variable. For example, when a takes values around 1, no transformation needs to be done, but when a takes values around 0, a logarithm function can be made on the response variable. The final newly-transformed response variable maximizes the log-likelihood of the transformed model, and will likely reduce the extent of violation of homoscedasticity.
+### Polynomial Terms
 
-### Normality of Errors Violation
+As mentioned in the previous sections, from the residuals versus fitted plot of the newest model (@fig-figure5), to violate less of linearity assumptions such as linear relationship and homoscedasticity, what I should first do is to add nonlinear relationships to the predictor variables. Such approaches may include adding polynomial terms, such as capacity + (capacity)^2, logging our predictors, such as transforming capacity to log(capacity), and transforming our predictors using exponential terms, such as from capacity to exp(capacity). 
 
-The constructed multivariate linear regression model also shows possible violations in the linearity assumption 'Normality of Errors.' First of all, the violation of this assumption does not necessarily affect results of the prediction of response variahbles, which is part of the reason why no further approach was made despite a possible 'Normality of Errors' violation was observed. However, some approaches could also be taken to possibly improve the situation. First of all, one could consider adding polynomial terms between the two numerical variables, or including more interaction terms either between numerical and categorical or two categorical variables. However, we must still point out that due to the relatively good-performing p-value, r-squared, and standard residual errors, it is also relatively acceptable to stop at this point despite violating the 'Normality of Errors' assumptions.
+In my newest linear regression model, transforming my predictors to nonlinear ones is logical. This is mainly due to the corresponding residuals versus fitted plot, which shows a clear pattern between the residuals versus fitted values instead of scattered, pattern-less data points.
 
-## Other Ways to Improve the Model
+### Checking and Removing Influential Points
+
+From the qq plot of the newest linear regression model after the box-cox transformation (@fig-figure6), we see a heavy tail on the end with positive theoretical quantiles. This may suggest possible outliers, which are data points that have extreme values on the response variable, and/or leverage points, which are data points that have extreme values on the predictor variables. Therefore, the best approach to consider that takes in consideration of both types of points is to determine and remove the influential points, which takes in the most extreme values of both by determining which observations have unusual large impacts on the fitted regression model itself. This determination and elimination process can be proceeded by either calculating DFBETA values or Cook's distance, both methods using reasonable set thresholds.
+
+In this model derivation process, the step of identifying and eliminating influential points was not proceeded, since it should be done after adding nonlinear terms on predictor variables (and this step exceeded my scope of knowledge)
+
+### Next Steps
+
+Other steps that I could complete in the future include the following.
+
+I can first consider weighted less squares (WLS) after completing the procedures described above to account for addressing heteroscedasticity. The new model may not entirely eliminate violations of homoscedasticity, or constant variance, since this approach is best to apply when variance increases or decreases systematically with fitted values, but it at least diminishes this violation.
+
+After this, the final step for constructing the multivariate linear regression model would be using the AIC(Akaike Information Criterion)/BIC(Bayesian Information Criterion) to determine the best model of all numbers of predictors, ranging up to the current most-complex model. Note that our model is predictive, since we want to predict the demand of shelters ("count"), and there is a possibility of a larger scope in the future, so we will choose AIC in this case, but this is also part of further steps.
+
+However, we must also consider to use an alternative model instead of multivariate linear regression model to address the relationship between the predictor and response variables. For example, higher-end models such as generalized additive models (GAMs), as well as machine-learning methods such as decision trees and random forests are all more-complicated ones that provide a more flexible approach to address the relationship.
+
+## Further Steps After Completing The Above Possible Procedures
 
 ### Enlargening The Scope
 
@@ -433,7 +545,6 @@ A similar paradox Berkson's paradox may also occur similarly. Berkson's paradox 
 
 Let's also analyze some information about the data collection process of the same Open Data Toronto dataset named 'Daily Shelter & Overnight Service Occupancy & Capacity'. According to the official website page of the dataset on Open Data Toronto, the updated information about shelter and overnight service programs, including the program's operator, location, classification, occupancy, and capacity, which are all "administered by TSSS(Toronto Shelter and Support Services" (@Dataset). However, we cannot make sure that the administration of TSSS is certainly free of mistakes, so some parts of the dataset may also be done with convenience sampling, which is a type of non-probability sampling when researchers collect data which are easiest to accest from their perspective. If this hypothesis holds true, then even if the entire dataset used, the model can be still not representative of all the related facilities in the Greater Toronto Area (GTA).
 \newpage
-
 
 # References
 

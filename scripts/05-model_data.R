@@ -149,7 +149,7 @@ optimal_lambda <- boxcox_result$x[which.max(boxcox_result$y)]
 
 # Transform Y and refit the model
 if (optimal_lambda == 0) {
-  analysis_data$count_transformed <- log(mydata$count)
+  analysis_data$count_transformed <- log(analysis_data$count)
 } else {
   analysis_data$count_transformed <- (analysis_data$count^optimal_lambda - 1) / optimal_lambda
 }
