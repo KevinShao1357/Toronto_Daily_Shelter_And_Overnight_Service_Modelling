@@ -28,6 +28,7 @@ library(knitr)
 library(kableExtra)
 library(arrow)
 library(ggplot2)
+library(MASS)
 
 # Read and save the cleaned dataset
 cleaned_data2 <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
@@ -415,7 +416,7 @@ if (optimal_lambda == 0) {
 
 # Refit the model with the transformed Y
 new_model <- lm(count_transformed ~ service_type + program_area + classification + capacity +
-                  occupancy_rate + capacity:occupancy_rate, data = analysis_data)
+                  occupancy_rate + capacity:occupancy_rate, data = cleaned_data2)
 
 # Get the new model's residuals and fitted values, combine them into a dataframe
 # and then create a residuals versus fitted plot
@@ -441,6 +442,12 @@ ggplot(data_new, aes(x = fitted, y = residuals)) +
 #| echo: false
 #| warning: false
 #| message: false
+
+residuals_df_new <- data.frame(
+  res = res_new,
+  theoretical = qnorm(ppoints(length(res_new))
+  )
+)
 
 ggplot(residuals_df_new, aes(sample = res_new)) +
   stat_qq() +

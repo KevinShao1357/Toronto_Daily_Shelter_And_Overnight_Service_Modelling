@@ -43,7 +43,7 @@ cleaned_data <- cleaned_data[cleaned_data$sector == "Mixed Adult", ]
 # Choose the columns needed
 cleaned_data <-
   cleaned_data |>
-  select(
+  dplyr::select(
     x_id,
     occupancy_date,
     overnight_service_type,
@@ -83,7 +83,7 @@ any(duplicated(cleaned_data$id))
 # There are no duplicates, so we can now delete the id column of the dataset
 cleaned_data <-
   cleaned_data |>
-  select(
+  dplyr::select(
     date,
     service_type,
     program_area,
@@ -97,7 +97,7 @@ cleaned_data <-
 # row, and so since we already checked this, we can now ignore the date variable
 cleaned_data <-
   cleaned_data |>
-  select(
+  dplyr::select(
     service_type,
     program_area,
     classification,
