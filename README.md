@@ -31,7 +31,7 @@ The repo is structured as:
 The raw dataset used for this paper is named 'Daily Shelter & Overnight Service 
 Occupancy & Capacity', and the detailed citations for this dataset is in the file
 `references.bib`, which is in the `paper` file. The specific citation is named
-as 'Dataset'.
+as 'Dataset'. Note that this raw dataset used is only updated to December 13, 2024.
 
 # Statement on LLM usage
 

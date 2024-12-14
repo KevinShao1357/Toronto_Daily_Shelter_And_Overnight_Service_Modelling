@@ -143,7 +143,7 @@ ggplot(residuals_df_first, aes(sample = res_first)) +
        x = "Theoretical Quantiles",
        y = "Sample Quantiles")
 
-# The two qq plots have barely any difference, but since there is a logical
+# The two qq plots are both bad-performing, but since there is a logical
 # relationship between capacity and occupancy rate, we still choose the
 # pre-logged model (preserving the interaction term)
 
@@ -201,9 +201,10 @@ ggplot(residuals_df_new, aes(sample = res_new)) +
        y = "Sample Quantiles")
 
 # From the graphs of the qq plot and residuals versus fitted plot,
-# the qq plot is now better, with only strong deviations at the end with high
-# theoretical quantiles, and at the end with negative theoretical quantiles,
-# there is now only gradual deviations from the ideal line. However, the residuals
+# the qq plot is now better, at least only having heavy tails at both ends,
+# but most of the data points following the trend marked by the red line now,
+# although it still suggests possible violations of normality of errors, implicating
+# the possbility of existing outliers at both ends. However, the residuals
 # versus fitted plot suggests even stronger heteroscedasticity, and suggests
 # we may need to add polynomial terms and delete some influential points, but 
 # the larger possibility is that we should use another model, such as nonlinear

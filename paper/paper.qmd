@@ -11,8 +11,6 @@ toc: true
 number-sections: true
 bibliography: references.bib
 geometry: margin=0.75in
-header-includes:
-  - \clearpage
 ---
 
 ```{r}
@@ -41,7 +39,7 @@ cleaned_data2 <- read_parquet(here::here("data/02-analysis_data/analysis_data.pa
 
 # Introduction
 
-Canada provides shelters for people in need, such as refugees, the homeless, and people experiencing transitions in living spaces, and the country is continuing to build new shelters for such residents. On April 16, 2024, the Canadian government announced a funding of over 250 million dollars over two years to address homelessness and encampment all over the country. In 2022, Canada announced a target to eliminate homelessness by 2030. Canada Mortgage and Housing Corporation also allocated a total of 420 million dollars to account for homelessness (@Shelter). This implicates that the Canadian government will continuously invest in improving current shelters and building new shelters around the country. In 2024, Canada's Minister of Immigration, Refugees, and Citizenship Marc Miller also announced that the country would accept 27,000 new refguees this year, and this trend is likely to continue in the next years (@Refugee). We can conclude that more shelters are likely to be built in Canada in the future, and the same trend is also valid for the GTA(Greater Toronto Area). 
+Canada provides shelters for people in need, such as refugees, the homeless, and people experiencing transitions in living spaces, and the country is continuing to build new shelters for such residents. On April 16, 2024, the Canadian government announced a funding of over 250 million dollars over two years to address homelessness and encampment all over the country. In 2022, Canada announced a target to eliminate homelessness by 2030. Canada Mortgage and Housing Corporation also allocated a total of 420 million dollars to account for homelessness (@Shelter). This implicates that the Canadian government will continuously invest in improving current shelters and building new shelters around the country. In 2024, Canada's Minister of Immigration, Refugees, and Citizenship Marc Miller also announced that the country would accept 27,000 new refugees this year, and this trend is likely to continue in the next years (@Refugee). We can conclude that more shelters are likely to be built in Canada in the future, and the same trend is also valid for the GTA(Greater Toronto Area). 
 
 To find a way to maximize efficiency of the investment on shelters, I want to evaluate the effect of predicting then number of beds (which reflects the necessary size of shelters need be built, expanded, or renovated) by constructing a multivariate linear regression model based on variables such as specific types of shelters and their services, as well as occupancy rates and averaged number of occupants per day. We will limit our scope of prediction to the GTA(Greater Toronto Area), since it is the largest city in Canada, and is also the scope of our chosen dataset. We also set the city of where the shelter is located to Downtown Toronto, and also set the classification of shelters based on gender and age to mixed adult, which are all the ones of their category with the highest frequency. As mentioned in the previous paragraph, we also chose our response variable to be number of beds, a choice between shelters grouped by rooms or shelters grouped by beds. The reasoning behind these choices are explained in the 'Measurement' of the data section (Section @sec-data).
 
@@ -53,7 +51,7 @@ The remainder of this paper is structured as follows: @sec-data details the data
 
 ## Overview
 
-The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R). The book 'Telling Stories with Data' (@tellingstories) was also used to complete this paper.
+The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. Note that the version of the dataset used for this paper is updated to December 13, 2024. The paper's in-depth analysis and preliminary data analysis are all completed using the statistical programming language R (@R). The book 'Telling Stories with Data' (@tellingstories) was also used to complete this paper.
 
 Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), testthat (@testthat), car (@car), here (@here), and MASS (@MASS).
 
@@ -154,7 +152,7 @@ knitr::kable(c(Emergency = sum(cleaned_data2$classification == 'Emergency'),
                Transitional = sum(cleaned_data2$classification == 'Transitional')),
              align = "c", col.names = ("Counts For Each Classification"))
 ```
-From @tbl-table4, we can see that there are much more emergency locations (around 5400) than transitional locations (around 1400). There are around three times more emergency locations than transitional locations.
+From @tbl-table4, we can see that there are much more emergency locations (around 5600) than transitional locations (around 1400). There are around three times more emergency locations than transitional locations.
 
 ### Program Area
 
@@ -183,7 +181,7 @@ knitr::kable(c(Refugee = sum(cleaned_data2$program_area == 'Base Program - Refug
                Winter_Programs = sum(cleaned_data2$program_area == 'Winter Programs')),
              align = "c", col.names = ("Counts For Each Classification"))
 ```
-From @tbl-table5, we observe that locations with the program area 'Base Shelter and Overnight Services System' has most observations (around 4800). Locations with the program area 'Base Program - Refugee' has 1272 observations, around one-fourth of the previous one. The remaining two locations has much less observations.
+From @tbl-table5, we observe that locations with the program area 'Base Shelter and Overnight Services System' has most observations (around 5000). Locations with the program area 'Base Program - Refugee' has 1316 observations, around one-fourth of the previous one. The remaining two locations has much less observations.
 
 ### Capacity
 
@@ -215,7 +213,7 @@ The following @tbl-table7 represents the summary statistics of occupancy rate.
 
 knitr::kable(c(mean = mean(cleaned_data2$occupancy_rate), standard_deviation = sd(cleaned_data2$occupancy_rate), maximum = max(cleaned_data2$occupancy_rate), minimum = min(cleaned_data2$occupancy_rate)), align = "c", col.names = ("Occupancy Rate in a Given Day"))
 ```
-From @tbl-table7, we can conclude that occupancy rate of locations are all pretty much near 100, with a relatively low standard deviation of 5 percentage points, so most locations are relatively full, but we can still consider it as a predictor variable, but needs careful consideration when interpreting results.
+From @tbl-table7, we can conclude that occupancy rate of locations are all pretty much near 100, with a relatively low standard deviation of 6 percentage points, so most locations are relatively full, but we can still consider it as a predictor variable, but needs careful consideration when interpreting results.
 
 # Model {#sec-model}
 
@@ -396,7 +394,7 @@ ggplot(residuals, aes(x = theoretical, y = res)) +
 
 ```
 
-The two qq plots have barely any difference, and with the previous analysis of the residuals standard errors and p-values, we still eliminate the original model and choose the model with interaction terms but before we log the response variable. Now we proceed with the Box-Cox transformation, update the dataset and model, and then create the residuals versus fitted (@fig-figure5) and qq plot (@fig-figure6) for this new model.
+The two qq plots both have bad performance, both clearly violating normality of errors assumptions, and with the previous analysis of the residuals standard errors and p-values, we still eliminate the original model and choose the model with interaction terms but before we log the response variable. Now we proceed with the Box-Cox transformation, update the dataset and model, and then create the residuals versus fitted (@fig-figure5) and qq plot (@fig-figure6) for this new model.
 
 ```{r}
 #| label: fig-figure5
@@ -461,7 +459,7 @@ ggplot(residuals_df_new, aes(sample = res_new)) +
        y = "Sample Quantiles")
 ```
 
-The qq plot of the new model after completing the box-cox transformation (@fig-figure6) has improved compared to the previous one. The end with the more negative theoretical quantiles values now only has gradual increasing deviations from the ideal line that the data points should follow, which is marked in red. However, a heavy tail still exists at the end with positive theoretical quantiles, suggesting possible outliers when we only look at the qq plot itself.
+The qq plot of the new model after completing the box-cox transformation (@fig-figure6) has improved compared to the previous one, with at least most data points following the trend marked by the red line, but heavy tails can still be seen on both ends, the one with the negative theoretical quantiles and the one with the positive theoretical quantiles. This suggests possible outliers on both ends when we only look at the qq plot itself.
 
 Now we observe the residuals versus fitted plot for the new model after the box-cox transformation (@fig-figure5). This plot data points, with the x-axis representing fitted values and the y-axis representing residuals, displays a few semi-circle patterns, which suggests even more severe violations of homoscedasticity, or constant variance. Therefore, I should consider adding polynomial terms at this point, but the method for deciding the specific polynomial terms is over the scope of my knowledge, so I just stop here and save the current model as our temporary final model. Also note that from this residuals versus fitted plot, we see that the new model also violates the linearity relationship assumption, but since it at least provides a possibility to add polynomial terms to our predictor variables, I am on the right track, so I still save this new model.
 
@@ -535,7 +533,7 @@ Moreover, in this linear regression model, the gender and age that a specific lo
 
 ### Making The Date a Predictor Variable
 
-In this derived multivariate linear regression model, date is not a predictor variable, and the model is based on a dataset that only considers data from January 1 to December 1, 2024. However, one could make it a continuous predictor variable to increase precision and/or accuracy. For example, if the Canadian government decide to invest in such facilities that provide daily shelter and/or overnight service on November 16, 2026, one could make use of the newly-derived function, and put the date as the date predictor variable, and get a rough prediction of how many beds would be occupied at that specific date and location for a specific facility, aiding them to effectively use investments to improve the entire shelter system.
+In this derived multivariate linear regression model, date is not a predictor variable, and the model is based on a dataset that only considers data from January 1 to December 13, 2024. However, one could make it a continuous predictor variable to increase precision and/or accuracy. For example, if the Canadian government decide to invest in such facilities that provide daily shelter and/or overnight service on November 16, 2026, one could make use of the newly-derived function, and put the date as the date predictor variable, and get a rough prediction of how many beds would be occupied at that specific date and location for a specific facility, aiding them to effectively use investments to improve the entire shelter system.
 
 ## Further Discussions
 
