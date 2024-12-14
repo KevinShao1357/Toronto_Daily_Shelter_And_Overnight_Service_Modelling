@@ -2,7 +2,7 @@
 # Purpose: Downloads and saves the data from the corresponding Open Data Toronto
 # directory
 # Author: Kevin Shao
-# Date: 3 December 2024
+# Date: 14 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Find the corresponding Open Data Toronto dataset through
@@ -10,13 +10,14 @@
 # Any other information needed? No
 
 #### Workspace setup ####
-# Download the relevant packages needed for downloading required data if
-# necessary. If packages are already downloaded, comment out the following lines.
+# Download the relevant packages if necessary. If packages are already 
+# downloaded, comment out the following lines.
 install.packages("opendatatoronto")
 install.packages("readr")
 install.packages("dplyr")
+install.packages("tidyverse")
 
-# Read the packages needed to download required data
+# Read the necessary packages
 library(opendatatoronto)
 library(tidyverse)
 library(dplyr)

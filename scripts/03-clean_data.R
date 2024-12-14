@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Perform the necessary data cleaning process for downloaded raw dataset
 # Author: Kevin Shao
-# Date: 3 December 2024
+# Date: 14 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Have the chosen raw dataset downloaded. All previous scripts 
@@ -9,11 +9,13 @@
 # Any other information needed? No
 
 #### Workspace setup ####
-# Download the relevant packages needed for downloading required data if
-# necessary. If packages are already downloaded, comment out the following lines.
+# Download the relevant packages if necessary. If packages are already 
+# downloaded, comment out the following lines.
 install.packages("janitor")
+install.packages("tidyverse")
+install.packages("arrow")
 
-# Read the packages needed to download required data
+# Read the necessary packages
 library(tidyverse)
 library(janitor)
 library(arrow)

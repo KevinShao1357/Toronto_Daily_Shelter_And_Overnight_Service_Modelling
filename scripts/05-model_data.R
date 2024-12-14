@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Construct a multivariate linear regression model using the cleaned dataset
 # Author: Kevin Shao
-# Date: 3 December 2024
+# Date: 14 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Have the chosen raw dataset downloaded. All previous scripts 
@@ -10,15 +10,24 @@
 
 
 #### Workspace setup ####
+# Download the relevant packages if necessary. If packages are already 
+# downloaded, comment out the following lines.
+install.packages("tidyverse")
+install.packages("readr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("arrow")
+install.packages("MASS")
+install.packages("car")
+
+# Read the necessary packages
 library(tidyverse)
 library(readr)
 library(dplyr)
-library(janitor)
 library(ggplot2)
 library(arrow)
 library(MASS)
 library(car)
-library(knitr)
 
 #### Read data ####
 # Read the saved parquet file

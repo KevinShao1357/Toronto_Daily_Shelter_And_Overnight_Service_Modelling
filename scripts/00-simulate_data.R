@@ -2,7 +2,7 @@
 # Purpose: Simulates the dataset provided by Open Data Toronto about Daily Shelter
 # and Overnight Service Occupancy and Capacity with only necessary columns
 # Author: Kevin Shao
-# Date: 3 December 2024
+# Date: 14 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: The `tidyverse` package must be installed.
@@ -10,10 +10,15 @@
 
 
 #### Workspace setup ####
-# Download the relevant packages needed for downloading required data if
-# necessary. If packages are already downloaded, comment out the following lines.
+# Download the relevant packages needed if necessary. If packages are already 
+# downloaded, comment out the following lines.
 install.packages("tidyverse")
 install.packages("arrow")
+
+# You also need to download the following two packages, which are used for testing
+# of the simulated data
+install.packages("here")
+install.packages("testthat") 
 
 # Load the necessary packages and ensure reproducibility
 library(tidyverse)
@@ -62,4 +67,3 @@ simulated_data <- simulated_data[simulated_data$count <= simulated_data$capacity
 
 #### Save data ####
 write_parquet(simulated_data, "data/00-simulated_data/simulated_data.parquet")
-

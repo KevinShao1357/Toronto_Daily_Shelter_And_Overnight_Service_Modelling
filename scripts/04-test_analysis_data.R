@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Tests the cleaned data
 # Author: Kevin Shao
-# Date: 3 December 2024
+# Date: 14 December 2024
 # Contact: kevin.shao@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Have a cleaned data that is processed and saved properly. All
@@ -9,13 +9,16 @@
 # Any other information needed? No
 
 #### Workspace setup ####
-# Read the packages needed to download required data
+# Read the necessary packages
 library(tidyverse)
 library(arrow)
 library(testthat)
-
-# Read the dataset and save it into cleaned_data
-cleaned_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
+library(here)
+# Read the dataset and save it into cleaned_data using a testthat function, 
+# setting it as an empty set.
+test_that("Load dataset for testing", {
+  cleaned_data <<- read_parquet(here("data", "02-analysis_data", "analysis_data.parquet"))
+})
 
 #### Test data ####
 # Test that the dataset has 6 columns in total

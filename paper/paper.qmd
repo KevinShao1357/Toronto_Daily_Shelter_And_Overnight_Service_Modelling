@@ -20,8 +20,22 @@ header-includes:
 #| warning: false
 #| message: false
 #| echo: false
+#| 
+# Download the packages if necessary. If packages are already 
+# downloaded, comment out the following lines.
+install.packages("tidyverse")
+install.packages("opendatatoronto")
+install.packages("janitor")
+install.packages("dplyr")
+install.packages("readr")
+install.packages("knitr")
+install.packages("kableExtra")
+install.packages("arrow")
+install.packages("ggplot2")
+install.packages("MASS")
+install.packages("here")
 
-# Load the necessary packages
+# Load the packages
 library(tidyverse)
 library(opendatatoronto)
 library(janitor)
@@ -32,6 +46,7 @@ library(kableExtra)
 library(arrow)
 library(ggplot2)
 library(MASS)
+library(here)
 
 # Read and save the cleaned dataset
 cleaned_data2 <- read_parquet(here::here("data/02-analysis_data/analysis_data.parquet"))
@@ -54,7 +69,7 @@ The remainder of this paper is structured as follows: @sec-data details the data
 
 The dataset "Daily Shelter & Overnight Service Occupancy & Capacity" (@Dataset) was sourced from the dataset with same name found in Open Data Toronto. The paper's in-depth analysis and prelimary data analysis are all completed using the statistical programming language R (@R). The book 'Telling Stories with Data' (@tellingstories) was also used to complete this paper.
 
-Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), testthat (@testthat), car (@car), knitr (@knitr) and MASS (@MASS).
+Packages used to complete the paper and/or the scripts include ggplot2 (@ggplot2), tidyverse (@tidyverse), opendatatoronto (@opendatatoronto), janitor (@janitor), dplyr (@dplyr), readr (@readr), knitr (@knitr), kableExtra (@kableExtra), arrow (@arrow), testthat (@testthat), car (@car), here (@here), and MASS (@MASS).
 
 The primary objective of this paper is to evaluate the validity of predicting the number of beds necessary for a shelter by constructing a multivariate linear regression model, as mentioned in the introduction section. The number of beds of a shelter can reflect the necessary size of a shelter, so the general investment amounts of renovating existing shelters and building new shelters can be estimated, which can maximize efficiency of Canadian government's investments in shelters.
 
