@@ -10,6 +10,9 @@ format: pdf
 toc: true
 number-sections: true
 bibliography: references.bib
+geometry: margin=0.75in
+header-includes:
+  - \clearpage
 ---
 
 ```{r}
@@ -75,7 +78,7 @@ Since the aim of this paper is only to evaluate the validity of predicting the n
 
 We first consider the classification of shelters based on gender and age, which is divided into adult men, adult women, mixed adult, youth and family. We find that mixed adult shelters takes the majority with the most observations, so we conclude that mixed adult shelters are most representative for checking the validity of the multivariate linear regression model for predicting number of beds for a shelter, so we filter out so that only mixed adult shelters are in the cleaned dataset.
 
-Downtown Toronto has the most shelters in all the cities (of GTA(Greater Toronto Area)) in this dataset, so we also conclude that Downtown Toronto is the most representative of all the provided cities, so we then filter out the cleaned data so it only contains shelters in Downtown Toronto.
+Downtown Toronto has the most shelters in all the cities of GTA(Greater Toronto Area) in this dataset, so we also conclude that Downtown Toronto is the most representative of all the provided cities, so we then filter out the cleaned data so it only contains shelters in Downtown Toronto.
 
 In this dataset, the shelters are either grouped by rooms or by beds. Since our aim is to analyze the validity of maximizing efficiency of investments of shelters using a multivariate linear regression model, considering number of beds will bring more accurate results. This is because each room can vary in size, so it is not a precise measure of the demand of shelters, which is ultimately based on the number of people, while it is more accurate to assume that one bed can accommodate one person. Therefore, we then filter out the cleaned data so it only contains shelters in Downtown Toronto.
 
@@ -469,7 +472,6 @@ Our results are summarized in @tbl-table9.
 
 ```{r}
 #| label: tbl-table9
-#| tbl-cap: "Coefficients of the Final Model"
 #| echo: false
 #| warning: false
 #| message: false
